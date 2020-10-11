@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/impureWhite"
+
+    tools:context=".MainActivity"
+
+    >
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.33" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.8" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline20Percent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.20194647" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline50Percent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline80Percent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.8" />
+
+    <View
+        android:id="@+id/ViewBackgroundTop"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/background_top"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:indeterminate="false"
+        android:max="100"
+        android:progress="0"
+
+        android:progressDrawable="@drawable/progress"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.4" />
+
+    <SeekBar
+        android:id="@+id/seekBarRes"
+        android:layout_width="match_parent"
+        android:layout_height="34dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:background="@drawable/background_resolution_slider"
+        android:elevation="2dp"
+        android:indeterminateTint="@color/foregroundProgressBar"
+
+        android:paddingStart="45dp"
+        android:paddingEnd="45dp"
+        android:progressBackgroundTint="@color/backgroundProgressBar"
+        android:progressTint="@color/resSlider"
+
+        android:thumbTint="@color/resSlider"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline"
+        app:layout_constraintVertical_bias="0.5" />
+
+    <TextView
+        android:id="@+id/textViewPercentage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="3dp"
+        android:fontFamily="@font/nunito_bold"
+        android:text="+0%"
+        android:textColor="@color/textTop"
+        android:textSize="46sp"
+        app:layout_constraintBottom_toBottomOf="@+id/progressBar"
+        app:layout_constraintEnd_toEndOf="@+id/progressBar"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/progressBar"
+        app:layout_constraintTop_toTopOf="@+id/progressBar"
+        app:layout_constraintVertical_bias="0.42" />
+
+    <TextView
+        android:id="@+id/textViewHighResLimit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        android:fontFamily="@font/nunito_extra_light"
+
+        android:text="@string/high_res_limit"
+        android:textColor="@android:color/black"
+        android:textSize="12sp"
+
+        app:layout_constraintBottom_toBottomOf="@+id/seekBarRes"
+        app:layout_constraintEnd_toEndOf="@+id/seekBarRes"
+        app:layout_constraintHorizontal_bias="0.015"
+        app:layout_constraintStart_toStartOf="@+id/seekBarRes"
+        app:layout_constraintTop_toTopOf="@+id/seekBarRes"
+        app:layout_constraintVertical_bias="0.45" />
+
+    <TextView
+        android:id="@+id/textViewLowResLimit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        android:fontFamily="@font/nunito_extra_light"
+
+        android:text="@string/low_res_limit"
+        android:textColor="@android:color/black"
+        android:textSize="12sp"
+
+        app:layout_constraintBottom_toBottomOf="@+id/seekBarRes"
+        app:layout_constraintEnd_toEndOf="@+id/seekBarRes"
+        app:layout_constraintHorizontal_bias="0.975"
+        app:layout_constraintStart_toStartOf="@+id/seekBarRes"
+        app:layout_constraintTop_toTopOf="@+id/seekBarRes"
+        app:layout_constraintVertical_bias="0.45" />
+
+    <TextView
+        android:id="@+id/textViewFPS"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="3dp"
+        android:fontFamily="@font/nunito_bold"
+        android:text="@string/FPS"
+        android:textColor="@color/textTop"
+        android:textSize="22sp"
+        app:layout_constraintBottom_toBottomOf="@+id/progressBar"
+        app:layout_constraintEnd_toEndOf="@+id/progressBar"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/progressBar"
+        app:layout_constraintTop_toTopOf="@+id/progressBar"
+        app:layout_constraintVertical_bias="0.72" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/nunito_semi_bold"
+
+        android:text="@string/recent_games"
+        android:textColor="@color/recentGameTextColor"
+        android:textSize="24sp"
+
+        app:layout_constraintBottom_toTopOf="@+id/addGameButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/seekBarRes"
+        app:layout_constraintVertical_bias="0.08" />
+
+    <View
+        android:id="@+id/viewDownBackground"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+
+        android:background="@drawable/background_bottom"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline2"
+        app:layout_constraintVertical_bias="0.902" />
+
+    <ImageButton
+        android:id="@+id/addGameButton"
+        android:layout_width="180dp"
+        android:layout_height="65dp"
+        android:layout_margin="10dp"
+        android:background="@drawable/rounded_corners"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintBottom_toTopOf="@+id/guideline2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline2"
+        app:layout_constraintVertical_bias="0"
+
+        app:srcCompat="@drawable/add_game_plus" />
+
+    <ImageButton
+        android:id="@+id/imageViewRecentGame1"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:background="@drawable/transparent_rounded_square"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline20Percent"
+        app:layout_constraintStart_toStartOf="@+id/guideline20Percent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/empty_recent_game"
+        />
+
+    <TextView
+        android:id="@+id/textViewRecentGame1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+
+        android:fontFamily="@font/nunito_light"
+        android:text="@string/empty_recent_game"
+        android:textColor="@android:color/black"
+        app:layout_constraintEnd_toEndOf="@+id/imageViewRecentGame1"
+        app:layout_constraintStart_toStartOf="@+id/imageViewRecentGame1"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewRecentGame1" />
+
+    <ImageButton
+        android:id="@+id/imageViewRecentGame2"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:background="@drawable/transparent_rounded_square"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline50Percent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/guideline50Percent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5"
+        app:srcCompat="@drawable/empty_recent_game"
+         />
+
+    <TextView
+        android:id="@+id/textViewRecentGame2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+
+        android:fontFamily="@font/nunito_light"
+        android:text="@string/empty_recent_game"
+        android:textColor="@android:color/black"
+        app:layout_constraintEnd_toEndOf="@+id/imageViewRecentGame2"
+        app:layout_constraintStart_toStartOf="@+id/imageViewRecentGame2"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewRecentGame2" />
+
+    <ImageButton
+        android:id="@+id/imageViewRecentGame3"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:background="@drawable/transparent_rounded_square"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline80Percent"
+        app:layout_constraintHorizontal_bias="0.855"
+        app:layout_constraintStart_toStartOf="@+id/guideline80Percent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5"
+        app:srcCompat="@drawable/empty_recent_game" />
+
+    <TextView
+        android:id="@+id/textViewRecentGame3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+
+        android:fontFamily="@font/nunito_light"
+        android:text="@string/empty_recent_game"
+        android:textColor="@android:color/black"
+        app:layout_constraintEnd_toEndOf="@+id/imageViewRecentGame3"
+        app:layout_constraintStart_toStartOf="@+id/imageViewRecentGame3"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewRecentGame3" />
+
+    <ImageButton
+        android:id="@+id/imageViewRecentGame4"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:background="@drawable/transparent_rounded_square"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline20Percent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/guideline20Percent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.68"
+        app:srcCompat="@drawable/empty_recent_game" />
+
+    <TextView
+        android:id="@+id/textViewRecentGame4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+
+        android:fontFamily="@font/nunito_light"
+        android:text="@string/empty_recent_game"
+        android:textColor="@android:color/black"
+        app:layout_constraintEnd_toEndOf="@+id/imageViewRecentGame4"
+        app:layout_constraintStart_toStartOf="@+id/imageViewRecentGame4"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewRecentGame4" />
+
+    <ImageButton
+        android:id="@+id/imageViewRecentGame5"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:background="@drawable/transparent_rounded_square"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline50Percent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/guideline50Percent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.68"
+        app:srcCompat="@drawable/empty_recent_game"/>
+
+    <TextView
+        android:id="@+id/textViewRecentGame5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+
+        android:fontFamily="@font/nunito_light"
+        android:text="@string/empty_recent_game"
+        android:textColor="@android:color/black"
+        app:layout_constraintEnd_toEndOf="@+id/imageViewRecentGame5"
+        app:layout_constraintStart_toStartOf="@+id/imageViewRecentGame5"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewRecentGame5" />
+
+    <ImageButton
+        android:id="@+id/imageViewRecentGame6"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@drawable/transparent_rounded_square"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toStartOf="@+id/guideline80Percent"
+        app:layout_constraintHorizontal_bias="0.855"
+        app:layout_constraintStart_toStartOf="@+id/guideline80Percent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.68"
+        app:srcCompat="@drawable/empty_recent_game" />
+
+    <TextView
+        android:id="@+id/textViewRecentGame6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+
+        android:fontFamily="@font/nunito_light"
+        android:text="@string/empty_recent_game"
+        android:textColor="@android:color/black"
+        app:layout_constraintEnd_toEndOf="@+id/imageViewRecentGame6"
+        app:layout_constraintStart_toStartOf="@+id/imageViewRecentGame6"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewRecentGame6" />
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
