@@ -5,9 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/impureWhite"
-
+    android:id="@+id/MainActivityOptionsShown"
     tools:context=".MainActivity"
-    android:id="@+id/MainActivity"
 
     >
 
@@ -24,7 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.8" />
+        app:layout_constraintGuide_percent="0.4" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline20Percent"
@@ -182,7 +181,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/seekBarRes"
-        app:layout_constraintVertical_bias="0.04" />
+        app:layout_constraintVertical_bias="0.08" />
 
     <View
         android:id="@+id/viewDownBackground"
@@ -207,7 +206,6 @@
         android:clickable="true"
         android:focusable="true"
         android:elevation="5dp"
-        android:outlineProvider="none"
         app:layout_constraintBottom_toTopOf="@+id/guidelineBottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -223,7 +221,7 @@
         android:layout_height="65dp"
         android:background="@drawable/transparent_rounded_square"
         android:scaleType="fitCenter"
-        android:clickable="true"
+        android:clickable="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline20Percent"
         app:layout_constraintStart_toStartOf="@+id/guideline20Percent"
@@ -250,7 +248,7 @@
         android:layout_height="65dp"
         android:background="@drawable/transparent_rounded_square"
         android:scaleType="fitCenter"
-        android:clickable="true"
+        android:clickable="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline50Percent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -279,7 +277,7 @@
         android:layout_height="65dp"
         android:background="@drawable/transparent_rounded_square"
         android:scaleType="fitCenter"
-        android:clickable="true"
+        android:clickable="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline80Percent"
         app:layout_constraintHorizontal_bias="0.855"
@@ -307,7 +305,7 @@
         android:layout_height="65dp"
         android:background="@drawable/transparent_rounded_square"
         android:scaleType="fitCenter"
-        android:clickable="true"
+        android:clickable="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline20Percent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -335,7 +333,7 @@
         android:layout_height="65dp"
         android:background="@drawable/transparent_rounded_square"
         android:scaleType="fitCenter"
-        android:clickable="true"
+        android:clickable="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline50Percent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -364,7 +362,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:background="@drawable/transparent_rounded_square"
         android:scaleType="fitCenter"
-        android:clickable="true"
+        android:clickable="false"
         app:layout_constraintEnd_toStartOf="@+id/guideline80Percent"
         app:layout_constraintHorizontal_bias="0.855"
         app:layout_constraintStart_toStartOf="@+id/guideline80Percent"
@@ -387,11 +385,12 @@
 
     <ImageButton
         android:id="@+id/imageButtonSettingSwitch"
-        android:layout_width="65dp"
-        android:layout_height="65dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:background="@drawable/transparent_rounded_square"
-        android:scaleType="fitCenter"
+        android:scaleType="centerCrop"
         android:elevation="5dp"
+        android:rotation="180"
         app:layout_constraintEnd_toEndOf="@+id/viewDownBackground"
         app:layout_constraintStart_toStartOf="@+id/viewDownBackground"
         app:layout_constraintTop_toBottomOf="@+id/addGameButton"
@@ -405,8 +404,7 @@
         android:textOff=""
         android:textOn=""
         android:checked="true"
-        android:clickable="false"
-        android:alpha="0"
+        android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline20Percent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -422,7 +420,6 @@
         android:fontFamily="@font/nunito_bold"
         android:textSize="17sp"
         android:textColor="@color/textTop"
-        android:alpha="0"
 
         android:elevation="5dp"
         android:paddingStart="4dp"
@@ -438,8 +435,7 @@
         android:textOff=""
         android:textOn=""
         android:checked="true"
-        android:clickable="false"
-        android:alpha="0"
+        android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline20Percent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -455,7 +451,6 @@
         android:fontFamily="@font/nunito_bold"
         android:textSize="17sp"
         android:textColor="@color/textTop"
-        android:alpha="0"
 
         android:elevation="5dp"
         android:paddingStart="4dp"
@@ -471,8 +466,7 @@
         android:textOff=""
         android:textOn=""
         android:checked="true"
-        android:clickable="false"
-        android:alpha="0"
+        android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline20Percent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -488,7 +482,6 @@
         android:fontFamily="@font/nunito_bold"
         android:textSize="17sp"
         android:textColor="@color/textTop"
-        android:alpha="0"
 
         android:elevation="5dp"
         android:paddingStart="4dp"
@@ -504,8 +497,7 @@
         android:textOff=""
         android:textOn=""
         android:checked="true"
-        android:clickable="false"
-        android:alpha="0"
+        android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline20Percent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -521,7 +513,6 @@
         android:fontFamily="@font/nunito_bold"
         android:textSize="17sp"
         android:textColor="@color/textTop"
-        android:alpha="0"
 
         android:elevation="5dp"
         android:paddingStart="4dp"
@@ -537,8 +528,7 @@
         android:textOff=""
         android:textOn=""
         android:checked="true"
-        android:clickable="false"
-        android:alpha="0"
+        android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline20Percent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -554,7 +544,6 @@
         android:fontFamily="@font/nunito_bold"
         android:textSize="17sp"
         android:textColor="@color/textTop"
-        android:alpha="0"
 
         android:elevation="5dp"
         android:paddingStart="4dp"

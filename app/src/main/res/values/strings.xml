@@ -13,4 +13,13 @@
 
     <string name="recent_games">Recently launched games:</string>
     <string name="empty_recent_game"> </string>
+
+
+    <string name="option_aggressive_LMK">Aggressive Low Memory Killer</string>
+    <string name="option_kill_services">Kill all services (NOT RECOMMENDED)</string>
+    <string name="option_kill_apps">Kill all apps (NOT RECOMMENDED)</string>
+    <string name="option_keep_DPI">Keep stock DPI</string>
+    <string name="option_only_add_games">Only add games</string>
+
+    
 </resources>

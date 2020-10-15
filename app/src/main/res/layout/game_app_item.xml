@@ -53,10 +53,9 @@
         android:text="@string/dummy_title"
         android:textColor="@android:color/black"
         android:textSize="20sp"
+        android:paddingStart="8dp"
 
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.22"
         app:layout_constraintStart_toEndOf="@+id/viewVerticalSep"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.07" />
@@ -71,10 +70,9 @@
         android:textColor="@color/impureGrey"
         android:textSize="14sp"
 
-        android:layout_marginStart="2dp"
+        android:paddingStart="10dp"
         android:fadingEdge="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.22"
         app:layout_constraintStart_toEndOf="@+id/viewVerticalSep"
         app:layout_constraintTop_toTopOf="parent"

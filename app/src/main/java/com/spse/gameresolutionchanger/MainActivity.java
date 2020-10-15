@@ -1,6 +1,9 @@
 package com.spse.gameresolutionchanger;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.constraintlayout.widget.Guideline;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -10,12 +13,15 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageButton;
@@ -40,6 +46,11 @@ public class MainActivity extends AppCompatActivity {
     ImageButton addGame;
 
     SettingsManager settingsManager;
+    Boolean settingsShown = false;
+    com.google.android.material.switchmaterial.SwitchMaterial[] optionSwitches = new com.google.android.material.switchmaterial.SwitchMaterial[5];
+
+    ConstraintSet layoutSettingsHidden = new ConstraintSet();
+    ConstraintSet layoutSettingShown = new ConstraintSet();
 
     Dialog gameListPopUp;
     List<GameApp> gameList;
@@ -48,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
     GameApp[] recentGameApp = new GameApp[6];
     TextView[] recentGameAppTitle = new TextView[6];
     ImageButton[] recentGameAppLogo = new ImageButton[6];
+
+
 
 
     @Override
@@ -69,6 +82,13 @@ public class MainActivity extends AppCompatActivity {
         if (settingsManager.isFirstLaunch()){
             settingsManager.initializeFirstLaunch();
         }
+
+        //Link option switches
+        optionSwitches[0] = findViewById(R.id.switchOptionAggressiveLMK);
+        optionSwitches[1] = findViewById(R.id.switchOptionKillServices);
+        optionSwitches[2] = findViewById(R.id.switchOptionKillApps);
+        optionSwitches[3] = findViewById(R.id.switchOptionKeepDPI);
+        optionSwitches[4] = findViewById(R.id.switchOptionOnlyAddGames);
 
         //Link recent games stuff
         recentGameAppTitle[0] = findViewById(R.id.textViewRecentGame1);
@@ -103,6 +123,31 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+
+        layoutSettingsHidden.clone((ConstraintLayout) findViewById(R.id.MainActivity));
+        layoutSettingShown.clone(this, R.layout.activity_main_options_shown);
+
+        ImageButton testButton = findViewById(R.id.imageButtonSettingSwitch);
+        testButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TransitionManager.beginDelayedTransition((ConstraintLayout) findViewById(R.id.MainActivity));
+                ConstraintSet constrain;
+                if(settingsShown){
+                    constrain = layoutSettingsHidden;
+                    setRecentGameAppClickable(true);
+                    setOptionsClickable(false);
+                }else{
+                    constrain = layoutSettingShown;
+                    setRecentGameAppClickable(false);
+                    setOptionsClickable(true);
+                }
+
+                constrain.applyTo((ConstraintLayout) findViewById(R.id.MainActivity));
+                settingsShown = !settingsShown;
+
+            }
+        });
 
 
 
@@ -224,5 +269,16 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    public void setOptionsClickable(boolean state){
+        for(int i = 0; i<5; i++){
+            optionSwitches[i].setClickable(state);
+        }
+    }
+
+    public void setRecentGameAppClickable(boolean state){
+        for(int i = 0; i<5; i++){
+            recentGameAppLogo[i].setClickable(state);
+        }
+    }
 
 }
