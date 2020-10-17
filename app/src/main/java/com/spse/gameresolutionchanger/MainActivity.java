@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.constraintlayout.widget.Guideline;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -40,7 +42,11 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     //Options variables
     TextView FPSPercentage;
+    TextView nativeResolution;
+    TextView tweakedResolution;
     SeekBar resolutionSeekBar;
+
+
     ProgressBar testBar;
     int lastProgress = 0; //This is used to set the progress before API 24
     ImageButton addGame;
@@ -67,17 +73,37 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        settingsManager = new SettingsManager(this);
+
+        //Check if we are using native resolution
+        if (settingsManager.getOriginalWidth() != settingsManager.getCurrentWidth()){
+            settingsManager.setScreenDimension(settingsManager.getOriginalHeight(), settingsManager.getOriginalWidth());
+        }
 
         //Mostly linking stuff to the view
         FPSPercentage = findViewById(R.id.textViewPercentage);
+        FPSPercentage.setText("+" + (int)(settingsManager.getLastResolutionScale()*0.8) + "%");
+
+        nativeResolution = findViewById(R.id.textViewNativeResolution);
+        nativeResolution.setText(settingsManager.getOriginalHeight()+"x"+settingsManager.getOriginalWidth());
+        tweakedResolution = findViewById(R.id.textViewTweakedResolution);
+        tweakedResolution.setText((int)((computeCoefficients(false)*settingsManager.getLastResolutionScale()) + settingsManager.getOriginalHeight()) +"x"+ (int)((computeCoefficients(true)*settingsManager.getLastResolutionScale()) + settingsManager.getOriginalWidth()));
+
+
+
         resolutionSeekBar = findViewById(R.id.seekBarRes);
+        resolutionSeekBar.setProgress(settingsManager.getLastResolutionScale());
+
         testBar = findViewById(R.id.progressBar);
+        testBar.setProgress(resolutionSeekBar.getProgress());
+        lastProgress = resolutionSeekBar.getProgress();
+
         addGame = findViewById(R.id.addGameButton);
 
 
         gameListPopUp = new Dialog(this);
 
-        settingsManager = new SettingsManager(this);
+
 
         if (settingsManager.isFirstLaunch()){
             settingsManager.initializeFirstLaunch();
@@ -89,6 +115,17 @@ public class MainActivity extends AppCompatActivity {
         optionSwitches[2] = findViewById(R.id.switchOptionKillApps);
         optionSwitches[3] = findViewById(R.id.switchOptionKeepDPI);
         optionSwitches[4] = findViewById(R.id.switchOptionOnlyAddGames);
+
+        //Load their previous state:
+        optionSwitches[0].setChecked(settingsManager.isLMKActivated());
+        optionSwitches[1].setChecked(settingsManager.killServices());
+        optionSwitches[2].setChecked(settingsManager.isMurderer());
+        optionSwitches[3].setChecked(settingsManager.keepStockDPI());
+        optionSwitches[4].setChecked(settingsManager.onlyAddGames());
+
+        //Add the click listener for all of them;
+        setOptionsOnClickListener();
+
 
         //Link recent games stuff
         recentGameAppTitle[0] = findViewById(R.id.textViewRecentGame1);
@@ -161,18 +198,16 @@ public class MainActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 testBar.incrementProgressBy((i- lastProgress));
                 lastProgress = i;
-                FPSPercentage.setText("+" + (int)(i*0.9) + "%");
+                FPSPercentage.setText("+" + (int)(i*0.8) + "%");
+
+                tweakedResolution.setText((int)((computeCoefficients(false)*i) + settingsManager.getOriginalHeight()) +"x"+ (int)((computeCoefficients(true)*i) + settingsManager.getOriginalWidth()));
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStartTrackingTouch(SeekBar seekBar) {}
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
         addGame.setOnClickListener(new View.OnClickListener() {
@@ -198,6 +233,13 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "CHANNEL_ID")
+                .setSmallIcon(R.drawable.add_game_plus)
+                .setContentTitle("Hello I'm a notification !")
+                .setContentText("Do you still see me ?")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        NotificationManagerCompat.from(this).notify(0,builder.build());
+
         //It is only the software values, furthermore it is unable to make abstraction of the bottom bar
         Log.d("DISPLAY WIDTH: ", String.valueOf(getResources().getDisplayMetrics().widthPixels));
         Log.d("DISPLAY HEIGHT: ", String.valueOf(getResources().getDisplayMetrics().heightPixels));
@@ -210,6 +252,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void showGameListPopup(Context context){
+        long test = System.currentTimeMillis();
+
         int xScreen = context.getResources().getDisplayMetrics().widthPixels;
         int yScreen = context.getResources().getDisplayMetrics().heightPixels;
 
@@ -221,12 +265,11 @@ public class MainActivity extends AppCompatActivity {
 
 
         for(int i = 0; i < gameList.size(); i++ ){
-            View child = inflater.inflate(R.layout.game_app_item, null);
 
+            View child = inflater.inflate(R.layout.game_app_item, null);
             TextView title = child.findViewById(R.id.textViewGameAppTitle);
             final TextView packageName = child.findViewById(R.id.textViewGameAppPackageName);
             ImageView icon = child.findViewById(R.id.imageViewGameIcon);
-
 
             GameApp game = gameList.get(i);
 
@@ -252,6 +295,8 @@ public class MainActivity extends AppCompatActivity {
             child.setMinimumHeight(10);
 
             layout.addView(child);
+
+
         }
 
 
@@ -259,6 +304,7 @@ public class MainActivity extends AppCompatActivity {
 
         gameListPopUp.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         gameListPopUp.show();
+        Log.d("EXEC TIME: ", "ms: " + (test + System.currentTimeMillis()));
     }
 
 
@@ -275,9 +321,56 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void setOptionsOnClickListener(){
+        optionSwitches[0].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                settingsManager.setLMK(optionSwitches[0].isChecked());
+            }
+        });
+
+        optionSwitches[1].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                settingsManager.setKillServices(optionSwitches[1].isChecked());
+            }
+        });
+
+        optionSwitches[2].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                settingsManager.setMurderer(optionSwitches[2].isChecked());
+            }
+        });
+
+        optionSwitches[3].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                settingsManager.setKeepStockDPI(optionSwitches[3].isChecked());
+            }
+        });
+
+        optionSwitches[4].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                settingsManager.setOnlyAddGames(optionSwitches[4].isChecked());
+            }
+        });
+    }
+
     public void setRecentGameAppClickable(boolean state){
         for(int i = 0; i<5; i++){
             recentGameAppLogo[i].setClickable(state);
+        }
+    }
+
+    public float computeCoefficients(boolean computeWidth){
+        if(computeWidth){
+            //Compute the width coefficient
+            return (float) (-settingsManager.getOriginalWidth()*0.005);
+        }else{
+            //Compute the height coefficient
+            return (float) (-settingsManager.getOriginalHeight()*0.005);
         }
     }
 

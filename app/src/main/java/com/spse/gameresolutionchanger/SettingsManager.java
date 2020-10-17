@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 
 import java.util.ArrayList;
@@ -12,7 +13,8 @@ import java.util.ArrayList;
 public class SettingsManager {
     //PUBLIC OPTIONS
     private boolean ONLY_ADD_GAMES;
-
+    private boolean KEEP_STOCK_DPI;
+    private boolean KILL_ALL_SERVICES;
     private boolean AGGRESSIVE_LOW_MEMORY_KILLER;
     private boolean KILL_ALL_OTHER_APPS;
 
@@ -35,9 +37,12 @@ public class SettingsManager {
         displayStats[1] = point.y;
         displayStats[2] = activity.getResources().getDisplayMetrics().densityDpi;
 
-        ONLY_ADD_GAMES = preferences.getBoolean("onlyAddGames", true);
+        ONLY_ADD_GAMES = preferences.getBoolean("onlyAddGames", false);
         AGGRESSIVE_LOW_MEMORY_KILLER = preferences.getBoolean("aggressiveLMK", false);
         KILL_ALL_OTHER_APPS = preferences.getBoolean("isMurderer", false);
+        KEEP_STOCK_DPI = preferences.getBoolean("keepStockDPI", false);
+        KILL_ALL_SERVICES = preferences.getBoolean("killServices", false);
+
     }
 
 
@@ -50,7 +55,7 @@ public class SettingsManager {
         return displayStats[1];
     }
 
-    public float getCurrentDensity(){
+    public int getCurrentDensity(){
         return displayStats[2];
     }
 
@@ -58,8 +63,8 @@ public class SettingsManager {
         return preferences.getBoolean("firstLaunch",true);
     }
 
-    public float getOriginalDensity(){
-        return preferences.getFloat("originalDPI", getCurrentDensity());
+    public int getOriginalDensity(){
+        return preferences.getInt("originalDPI", getCurrentDensity());
     }
 
     public String getOriginalResolution(){
@@ -91,6 +96,17 @@ public class SettingsManager {
         return KILL_ALL_OTHER_APPS;
     }
 
+    public boolean killServices(){
+        return KILL_ALL_SERVICES;
+    }
+
+    public boolean keepStockDPI(){return KEEP_STOCK_DPI;}
+
+    public int getLastResolutionScale(){
+        return preferences.getInt("lastResolutionScale", 0);
+    }
+
+
 
 
     //Set stuff
@@ -102,7 +118,7 @@ public class SettingsManager {
         editor.putInt("originalWidth", width);
         editor.putInt("originalHeight", height);
         editor.putString("originalResolution", width + "x" + height);
-        editor.putFloat("originalDPI", getCurrentDensity());
+        editor.putInt("originalDPI", getCurrentDensity());
 
 
         //Now we've collected the info
@@ -113,13 +129,21 @@ public class SettingsManager {
         editor.apply();
     }
 
-    public boolean setScreenDimension(int width, int height, int densityDPI){
+    public boolean setScreenDimension(int height, int width){
         boolean success;
+        int densityDPI;
+        if(!KEEP_STOCK_DPI){
+            densityDPI = (int)(getOriginalDensity() * ((float)width/(float)getOriginalWidth()));
+        }else{
+            densityDPI = getOriginalDensity();
+        }
+
+        Log.d("DensityDPI: ","nb: " + densityDPI);
         ArrayList<String> commands = new ArrayList<>(2);
         if (height < getCurrentHeight()){ //Scale Down
             commands.add("su -c wm density " + densityDPI);
             commands.add("su -c wm size " + width +"x"+ height);
-        }else{ //Scale up
+        }else{ //Scale up, shouldn't occur.
             commands.add("su -c wm size " + width +"x"+ height);
             commands.add("su -c wm density " + densityDPI);
         }
@@ -174,7 +198,27 @@ public class SettingsManager {
         editor.apply();
     }
 
+    public void setKeepStockDPI(boolean state){
+        KEEP_STOCK_DPI = state;
 
+        editor = preferences.edit();
+        editor.putBoolean("keepStockDPI", state);
+        editor.apply();
+    }
+
+    public void setKillServices(boolean state){
+        KILL_ALL_SERVICES = state;
+
+        editor = preferences.edit();
+        editor.putBoolean("killServices", state);
+        editor.apply();
+    }
+
+    public void setLastResolutionScale(int scale){
+        editor = preferences.edit();
+        editor.putInt("lastResolutionScale", scale);
+        editor.apply();
+    }
 
 }
 

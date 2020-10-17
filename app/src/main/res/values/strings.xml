@@ -2,14 +2,15 @@
     <string name="app_name">Game Resolution Changer</string>
 
     <string name="high_res_limit">100%</string>
-    <string name="low_res_limit">10%</string>
+    <string name="low_res_limit">50%</string>
 
     <string name="FPS">FPS</string>
 
     <string name="dummy_title">GameAppName (hezih)</string>
     <string name="dummy_package_name">PackageName (com.hezih.IwantToDie)</string>
 
-    <string name="resolution">Resolution: </string>
+    <string name="resolution">Default:</string>
+    <string name="resolution_tweaked">Tweaked:</string>
 
     <string name="recent_games">Recently launched games:</string>
     <string name="empty_recent_game"> </string>
