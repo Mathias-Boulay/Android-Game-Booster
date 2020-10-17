@@ -22,5 +22,10 @@
     <string name="option_keep_DPI">Keep stock DPI</string>
     <string name="option_only_add_games">Only add games</string>
 
+    <string name="reset_popup_title">Custom resolution found !</string>
+    <string name="reset_popup_text">Do you want to revert changes made by the app ?</string>
+    <string name="reset_popup_positive_choice">Revert changes</string>
+    <string name="reset_popup_negative_choice">No, I like them</string>
+
     
 </resources>

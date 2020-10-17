@@ -1,41 +1,29 @@
 package com.spse.gameresolutionchanger;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
-import androidx.constraintlayout.widget.Guideline;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.pm.PackageManager;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.transition.TransitionManager;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.Interpolator;
-import android.view.animation.OvershootInterpolator;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Space;
 import android.widget.TextView;
 
-import java.io.IOException;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,6 +55,9 @@ public class MainActivity extends AppCompatActivity {
     ImageButton[] recentGameAppLogo = new ImageButton[6];
 
 
+    AlertDialog dialog;
+
+
 
 
     @Override
@@ -76,9 +67,30 @@ public class MainActivity extends AppCompatActivity {
         settingsManager = new SettingsManager(this);
 
         //Check if we are using native resolution
-        if (settingsManager.getOriginalWidth() != settingsManager.getCurrentWidth()){
-            settingsManager.setScreenDimension(settingsManager.getOriginalHeight(), settingsManager.getOriginalWidth());
+        File tmpFile = new File(this.getApplicationInfo().dataDir + "/tmp");
+
+        if(tmpFile.exists()){
+            tmpFile.delete();
+        }else {
+            if (settingsManager.getOriginalWidth() != settingsManager.getCurrentWidth()) {
+                showResetPopup();
+            }
         }
+
+        /*
+        if (settingsManager.getOriginalWidth() != settingsManager.getCurrentWidth()){
+
+            settingsManager.setScreenDimension(settingsManager.getOriginalHeight(), settingsManager.getOriginalWidth());
+
+        }
+
+
+        if(new File(MainActivity.this.getApplicationInfo().dataDir + "/lastLMKProfile.backup").exists()){
+            GameAppManager.restoreOriginalLMK(this);
+        }
+
+         */
+
 
         //Mostly linking stuff to the view
         FPSPercentage = findViewById(R.id.textViewPercentage);
@@ -109,55 +121,15 @@ public class MainActivity extends AppCompatActivity {
             settingsManager.initializeFirstLaunch();
         }
 
-        //Link option switches
-        optionSwitches[0] = findViewById(R.id.switchOptionAggressiveLMK);
-        optionSwitches[1] = findViewById(R.id.switchOptionKillServices);
-        optionSwitches[2] = findViewById(R.id.switchOptionKillApps);
-        optionSwitches[3] = findViewById(R.id.switchOptionKeepDPI);
-        optionSwitches[4] = findViewById(R.id.switchOptionOnlyAddGames);
-
-        //Load their previous state:
-        optionSwitches[0].setChecked(settingsManager.isLMKActivated());
-        optionSwitches[1].setChecked(settingsManager.killServices());
-        optionSwitches[2].setChecked(settingsManager.isMurderer());
-        optionSwitches[3].setChecked(settingsManager.keepStockDPI());
-        optionSwitches[4].setChecked(settingsManager.onlyAddGames());
+        //Options
+        initializeOptions();
 
         //Add the click listener for all of them;
         setOptionsOnClickListener();
 
 
-        //Link recent games stuff
-        recentGameAppTitle[0] = findViewById(R.id.textViewRecentGame1);
-        recentGameAppTitle[1] = findViewById(R.id.textViewRecentGame2);
-        recentGameAppTitle[2] = findViewById(R.id.textViewRecentGame3);
-        recentGameAppTitle[3] = findViewById(R.id.textViewRecentGame4);
-        recentGameAppTitle[4] = findViewById(R.id.textViewRecentGame5);
-        recentGameAppTitle[5] = findViewById(R.id.textViewRecentGame6);
-
-        recentGameAppLogo[0] = findViewById(R.id.imageViewRecentGame1);
-        recentGameAppLogo[1] = findViewById(R.id.imageViewRecentGame2);
-        recentGameAppLogo[2] = findViewById(R.id.imageViewRecentGame3);
-        recentGameAppLogo[3] = findViewById(R.id.imageViewRecentGame4);
-        recentGameAppLogo[4] = findViewById(R.id.imageViewRecentGame5);
-        recentGameAppLogo[5] = findViewById(R.id.imageViewRecentGame6);
-
-        //Now we need to load recent games
-        for(int i=0; i<6; i++){
-            recentGameApp[i] = settingsManager.getRecentGameApp(i+1);
-            if(recentGameApp[i] != null) {
-                recentGameAppTitle[i].setText(recentGameApp[i].getGameName());
-                recentGameAppLogo[i].setImageDrawable(recentGameApp[i].getIcon());
-
-                final int finalI = i;
-                recentGameAppLogo[i].setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        GameAppManager.launchGameApp(MainActivity.this, recentGameApp[finalI].getPackageName());
-                    }
-                });
-            }
-        }
+        //Recent GameApps
+        initializeRecentGames();
 
 
 
@@ -223,22 +195,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void init() {
-        if (ExecuteAsRootBase.canRunRootCommands()){
+        if (ExecuteADBCommands.canRunRootCommands()){
             Log.d("ROOT TEST","Nice, we have root access !");
             ArrayList<String> Commands = new ArrayList<>();
             Commands.add("su -c wm size >> " + MainActivity.this.getApplicationInfo().dataDir + "/test.test");
 
-            ExecuteAsRootBase.execute(Commands);
+            ExecuteADBCommands.execute(Commands,true);
 
 
         }
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "CHANNEL_ID")
-                .setSmallIcon(R.drawable.add_game_plus)
-                .setContentTitle("Hello I'm a notification !")
-                .setContentText("Do you still see me ?")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-        NotificationManagerCompat.from(this).notify(0,builder.build());
 
         //It is only the software values, furthermore it is unable to make abstraction of the bottom bar
         Log.d("DISPLAY WIDTH: ", String.valueOf(getResources().getDisplayMetrics().widthPixels));
@@ -313,7 +278,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    private void initializeOptions(){
+        //Link option switches
+        optionSwitches[0] = findViewById(R.id.switchOptionAggressiveLMK);
+        optionSwitches[1] = findViewById(R.id.switchOptionKillServices);
+        optionSwitches[2] = findViewById(R.id.switchOptionKillApps);
+        optionSwitches[3] = findViewById(R.id.switchOptionKeepDPI);
+        optionSwitches[4] = findViewById(R.id.switchOptionOnlyAddGames);
 
+        //Load their previous state:
+        optionSwitches[0].setChecked(settingsManager.isLMKActivated());
+        optionSwitches[1].setChecked(settingsManager.killServices());
+        optionSwitches[2].setChecked(settingsManager.isMurderer());
+        optionSwitches[3].setChecked(settingsManager.keepStockDPI());
+        optionSwitches[4].setChecked(settingsManager.onlyAddGames());
+    }
 
     public void setOptionsClickable(boolean state){
         for(int i = 0; i<5; i++){
@@ -358,6 +337,40 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void initializeRecentGames(){
+        //Link recent games stuff
+        recentGameAppTitle[0] = findViewById(R.id.textViewRecentGame1);
+        recentGameAppTitle[1] = findViewById(R.id.textViewRecentGame2);
+        recentGameAppTitle[2] = findViewById(R.id.textViewRecentGame3);
+        recentGameAppTitle[3] = findViewById(R.id.textViewRecentGame4);
+        recentGameAppTitle[4] = findViewById(R.id.textViewRecentGame5);
+        recentGameAppTitle[5] = findViewById(R.id.textViewRecentGame6);
+
+        recentGameAppLogo[0] = findViewById(R.id.imageViewRecentGame1);
+        recentGameAppLogo[1] = findViewById(R.id.imageViewRecentGame2);
+        recentGameAppLogo[2] = findViewById(R.id.imageViewRecentGame3);
+        recentGameAppLogo[3] = findViewById(R.id.imageViewRecentGame4);
+        recentGameAppLogo[4] = findViewById(R.id.imageViewRecentGame5);
+        recentGameAppLogo[5] = findViewById(R.id.imageViewRecentGame6);
+
+        //Now we need to load recent games
+        for(int i=0; i<6; i++){
+            recentGameApp[i] = settingsManager.getRecentGameApp(i+1);
+            if(recentGameApp[i] != null) {
+                recentGameAppTitle[i].setText(recentGameApp[i].getGameName());
+                recentGameAppLogo[i].setImageDrawable(recentGameApp[i].getIcon());
+
+                final int finalI = i;
+                recentGameAppLogo[i].setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        GameAppManager.launchGameApp(MainActivity.this, recentGameApp[finalI].getPackageName());
+                    }
+                });
+            }
+        }
+    }
+
     public void setRecentGameAppClickable(boolean state){
         for(int i = 0; i<5; i++){
             recentGameAppLogo[i].setClickable(state);
@@ -372,6 +385,35 @@ public class MainActivity extends AppCompatActivity {
             //Compute the height coefficient
             return (float) (-settingsManager.getOriginalHeight()*0.005);
         }
+    }
+
+    private void showResetPopup(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+        // 2. Chain together various setter methods to set the dialog characteristics
+        builder.setTitle(R.string.reset_popup_title)
+                .setMessage(R.string.reset_popup_text)
+                .setPositiveButton(R.string.reset_popup_positive_choice, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        GameAppManager.restoreOriginalLMK(MainActivity.this);
+                        settingsManager.setScreenDimension(settingsManager.getOriginalHeight(), settingsManager.getOriginalWidth());
+
+                    }
+                })
+                .setNegativeButton(R.string.reset_popup_negative_choice, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.d("NEGATIVE CHOICE BUTTON", "PRESSED");
+                        dialog.dismiss();
+                    }
+                });
+
+
+        dialog = builder.create();
+
+        dialog.show();
     }
 
 }

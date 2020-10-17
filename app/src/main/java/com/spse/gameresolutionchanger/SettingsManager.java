@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Point;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 
@@ -148,7 +147,7 @@ public class SettingsManager {
             commands.add("su -c wm density " + densityDPI);
         }
 
-        success = ExecuteAsRootBase.execute(commands);
+        success = ExecuteADBCommands.execute(commands, true);
         displayStats[0] = width;
         displayStats[1] = height;
         displayStats[2] = densityDPI;

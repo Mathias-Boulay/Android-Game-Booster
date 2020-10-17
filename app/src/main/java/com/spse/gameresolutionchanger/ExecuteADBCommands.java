@@ -5,9 +5,12 @@ import android.util.Log;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
-public class ExecuteAsRootBase extends MainActivity
+public class ExecuteADBCommands extends MainActivity
 {
     public static boolean canRunRootCommands()
     {
@@ -68,22 +71,26 @@ public class ExecuteAsRootBase extends MainActivity
         return retval;
     }
 
-    public static boolean execute(ArrayList<String> commands)
+    public static void execute(String command, boolean isSuperUser){
+        execute(new ArrayList<>(Collections.singletonList(command)), isSuperUser);
+    }
+
+    public static boolean execute(ArrayList<String> commands,boolean isSuperUser)
     {
         boolean retval = false;
 
         try
         {
-            //ArrayList<String> commands = getCommandsToExecute();
             if (null != commands && commands.size() > 0)
             {
-                Process suProcess = Runtime.getRuntime().exec("su");
+                Process process = Runtime.getRuntime().exec(isSuperUser ? "su" : "");
 
-                DataOutputStream os = new DataOutputStream(suProcess.getOutputStream());
+                DataOutputStream os = new DataOutputStream(process.getOutputStream());
 
-                // Execute commands that require root access
-                for (String currCommand : commands)
+                // Execute commands that may require root access
+                for(int i=0; i<commands.size(); i++)
                 {
+                    String currCommand = commands.get(i);
                     os.writeBytes(currCommand + "\n");
                     os.flush();
                 }
@@ -93,8 +100,8 @@ public class ExecuteAsRootBase extends MainActivity
 
                 try
                 {
-                    int suProcessRetval = suProcess.waitFor();
-                    if (255 != suProcessRetval)
+                    int processRetval = process.waitFor();
+                    if (255 != processRetval)
                     {
                         // Root access granted
                         retval = true;
