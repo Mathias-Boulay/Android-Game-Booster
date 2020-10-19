@@ -8,14 +8,15 @@
 
     <string name="dummy_title">GameAppName (hezih)</string>
     <string name="dummy_package_name">PackageName (com.hezih.IwantToDie)</string>
+    <string name="cant_find_game">Can\'t find your game ?</string>
 
-    <string name="resolution">Default:</string>
+    <string name="resolution">Native:</string>
     <string name="resolution_tweaked">Tweaked:</string>
 
-    <string name="recent_games">Recently launched games:</string>
+    <string name="recent_games">Recently added games:</string>
     <string name="empty_recent_game"> </string>
 
-
+    <string name="option_title">Settings</string>
     <string name="option_aggressive_LMK">Aggressive Low Memory Killer</string>
     <string name="option_kill_services">Kill all services (NOT RECOMMENDED)</string>
     <string name="option_kill_apps">Kill all apps (NOT RECOMMENDED)</string>
@@ -23,9 +24,9 @@
     <string name="option_only_add_games">Only add games</string>
 
     <string name="reset_popup_title">Custom resolution found !</string>
-    <string name="reset_popup_text">Do you want to revert changes made by the app ?</string>
-    <string name="reset_popup_positive_choice">Revert changes</string>
-    <string name="reset_popup_negative_choice">No, I like them</string>
+    <string name="reset_popup_text">Do you want to revert back to the original resolution</string>
+    <string name="reset_popup_positive_choice">Revert resolution</string>
+    <string name="reset_popup_negative_choice">No, I like it</string>
 
     
 </resources>

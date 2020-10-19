@@ -13,7 +13,6 @@ public class SettingsManager {
     //PUBLIC OPTIONS
     private boolean ONLY_ADD_GAMES;
     private boolean KEEP_STOCK_DPI;
-    private boolean KILL_ALL_SERVICES;
     private boolean AGGRESSIVE_LOW_MEMORY_KILLER;
     private boolean KILL_ALL_OTHER_APPS;
 
@@ -36,11 +35,10 @@ public class SettingsManager {
         displayStats[1] = point.y;
         displayStats[2] = activity.getResources().getDisplayMetrics().densityDpi;
 
-        ONLY_ADD_GAMES = preferences.getBoolean("onlyAddGames", false);
+        ONLY_ADD_GAMES = preferences.getBoolean("onlyAddGames", true);
         AGGRESSIVE_LOW_MEMORY_KILLER = preferences.getBoolean("aggressiveLMK", false);
         KILL_ALL_OTHER_APPS = preferences.getBoolean("isMurderer", false);
         KEEP_STOCK_DPI = preferences.getBoolean("keepStockDPI", false);
-        KILL_ALL_SERVICES = preferences.getBoolean("killServices", false);
 
     }
 
@@ -95,10 +93,6 @@ public class SettingsManager {
         return KILL_ALL_OTHER_APPS;
     }
 
-    public boolean killServices(){
-        return KILL_ALL_SERVICES;
-    }
-
     public boolean keepStockDPI(){return KEEP_STOCK_DPI;}
 
     public int getLastResolutionScale(){
@@ -140,11 +134,11 @@ public class SettingsManager {
         Log.d("DensityDPI: ","nb: " + densityDPI);
         ArrayList<String> commands = new ArrayList<>(2);
         if (height < getCurrentHeight()){ //Scale Down
-            commands.add("su -c wm density " + densityDPI);
-            commands.add("su -c wm size " + width +"x"+ height);
+            commands.add("wm density " + densityDPI);
+            commands.add("wm size " + width +"x"+ height);
         }else{ //Scale up, shouldn't occur.
-            commands.add("su -c wm size " + width +"x"+ height);
-            commands.add("su -c wm density " + densityDPI);
+            commands.add("wm size " + width +"x"+ height);
+            commands.add("wm density " + densityDPI);
         }
 
         success = ExecuteADBCommands.execute(commands, true);
@@ -205,13 +199,6 @@ public class SettingsManager {
         editor.apply();
     }
 
-    public void setKillServices(boolean state){
-        KILL_ALL_SERVICES = state;
-
-        editor = preferences.edit();
-        editor.putBoolean("killServices", state);
-        editor.apply();
-    }
 
     public void setLastResolutionScale(int scale){
         editor = preferences.edit();

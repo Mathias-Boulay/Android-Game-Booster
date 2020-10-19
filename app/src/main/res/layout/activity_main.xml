@@ -402,6 +402,7 @@
         android:alpha="0"
         android:checked="true"
         android:clickable="false"
+        android:focusable="false"
         android:elevation="5dp"
         android:textOff=""
         android:textOn=""
@@ -410,7 +411,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guideline20Percent"
         app:layout_constraintTop_toTopOf="@+id/guidelineBottom"
-        app:layout_constraintVertical_bias="0.27" />
+        app:layout_constraintVertical_bias="0.44" />
 
     <TextView
         android:id="@+id/textViewOptionAggressiveLMK"
@@ -421,45 +422,13 @@
         android:fontFamily="@font/nunito_bold"
         android:paddingStart="4dp"
         android:text="@string/option_aggressive_LMK"
-
+        android:clickable="false"
+        android:focusable="false"
         android:textColor="@color/pureWhite"
         android:textSize="17sp"
         app:layout_constraintBottom_toBottomOf="@+id/switchOptionAggressiveLMK"
         app:layout_constraintStart_toEndOf="@+id/switchOptionAggressiveLMK"
         app:layout_constraintTop_toTopOf="@+id/switchOptionAggressiveLMK" />
-
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/switchOptionKillServices"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:alpha="0"
-        android:checked="true"
-        android:clickable="false"
-        android:elevation="5dp"
-        android:textOff=""
-        android:textOn=""
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline20Percent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline20Percent"
-        app:layout_constraintTop_toTopOf="@+id/guidelineBottom"
-        app:layout_constraintVertical_bias="0.43" />
-
-    <TextView
-        android:id="@+id/textViewOptionKillServices"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:alpha="0"
-        android:elevation="5dp"
-        android:fontFamily="@font/nunito_bold"
-        android:paddingStart="4dp"
-        android:text="@string/option_kill_services"
-
-        android:textColor="@color/pureWhite"
-        android:textSize="17sp"
-        app:layout_constraintBottom_toBottomOf="@+id/switchOptionKillServices"
-        app:layout_constraintStart_toEndOf="@+id/switchOptionKillServices"
-        app:layout_constraintTop_toTopOf="@+id/switchOptionKillServices" />
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/switchOptionKillApps"
@@ -468,6 +437,7 @@
         android:alpha="0"
         android:checked="true"
         android:clickable="false"
+        android:focusable="false"
         android:elevation="5dp"
         android:textOff=""
         android:textOn=""
@@ -487,6 +457,8 @@
         android:fontFamily="@font/nunito_bold"
         android:paddingStart="4dp"
         android:text="@string/option_kill_apps"
+        android:clickable="false"
+        android:focusable="false"
 
         android:textColor="@color/pureWhite"
         android:textSize="17sp"
@@ -501,6 +473,7 @@
         android:alpha="0"
         android:checked="true"
         android:clickable="false"
+        android:focusable="false"
         android:elevation="5dp"
         android:textOff=""
         android:textOn=""
@@ -520,6 +493,8 @@
         android:fontFamily="@font/nunito_bold"
         android:paddingStart="4dp"
         android:text="@string/option_keep_DPI"
+        android:clickable="false"
+        android:focusable="false"
 
         android:textColor="@color/pureWhite"
         android:textSize="17sp"
@@ -534,6 +509,7 @@
         android:alpha="0"
         android:checked="true"
         android:clickable="false"
+        android:focusable="false"
         android:elevation="5dp"
         android:textOff=""
         android:textOn=""
@@ -553,6 +529,8 @@
         android:fontFamily="@font/nunito_bold"
         android:paddingStart="4dp"
         android:text="@string/option_only_add_games"
+        android:clickable="false"
+        android:focusable="false"
 
         android:textColor="@color/pureWhite"
         android:textSize="17sp"
@@ -569,10 +547,10 @@
         android:text="@string/resolution"
         android:textColor="@color/pureWhite"
         android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="@+id/addGameButton"
-        app:layout_constraintEnd_toStartOf="@+id/addGameButton"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintEnd_toStartOf="@+id/progressBar"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guidelineBottom" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textViewTweakedResolutionTitle"
@@ -583,10 +561,10 @@
         android:text="@string/resolution_tweaked"
         android:textColor="@color/pureWhite"
         android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="@+id/addGameButton"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/addGameButton"
-        app:layout_constraintTop_toTopOf="@+id/guidelineBottom" />
+        app:layout_constraintStart_toEndOf="@+id/progressBar"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textViewNativeResolution"
@@ -613,6 +591,23 @@
         app:layout_constraintEnd_toEndOf="@+id/textViewTweakedResolutionTitle"
         app:layout_constraintStart_toStartOf="@+id/textViewTweakedResolutionTitle"
         app:layout_constraintTop_toBottomOf="@+id/textViewTweakedResolutionTitle" />
+
+    <TextView
+        android:id="@+id/textViewSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="100"
+        android:elevation="5dp"
+        android:fontFamily="@font/nunito_bold"
+        android:text="@string/option_title"
+        android:textColor="@color/pureWhite"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageButtonSettingSwitch"
+        app:layout_constraintEnd_toStartOf="@+id/guideline50Percent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/guideline50Percent"
+        app:layout_constraintTop_toBottomOf="@+id/imageButtonSettingSwitch"
+        app:layout_constraintVertical_bias="0.0" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

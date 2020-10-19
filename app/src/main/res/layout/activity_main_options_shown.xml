@@ -222,6 +222,7 @@
         android:background="@drawable/transparent_rounded_square"
         android:scaleType="fitCenter"
         android:clickable="false"
+        android:alpha="0"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline20Percent"
         app:layout_constraintStart_toStartOf="@+id/guideline20Percent"
@@ -234,6 +235,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
+        android:alpha="0"
 
         android:fontFamily="@font/nunito_light"
         android:text="@string/empty_recent_game"
@@ -249,6 +251,7 @@
         android:background="@drawable/transparent_rounded_square"
         android:scaleType="fitCenter"
         android:clickable="false"
+        android:alpha="0"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline50Percent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -263,6 +266,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
+        android:alpha="0"
 
         android:fontFamily="@font/nunito_light"
         android:text="@string/empty_recent_game"
@@ -278,6 +282,7 @@
         android:background="@drawable/transparent_rounded_square"
         android:scaleType="fitCenter"
         android:clickable="false"
+        android:alpha="0"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline80Percent"
         app:layout_constraintHorizontal_bias="0.855"
@@ -291,6 +296,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
+        android:alpha="0"
 
         android:fontFamily="@font/nunito_light"
         android:text="@string/empty_recent_game"
@@ -306,6 +312,7 @@
         android:background="@drawable/transparent_rounded_square"
         android:scaleType="fitCenter"
         android:clickable="false"
+        android:alpha="0"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline20Percent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -319,6 +326,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
+        android:alpha="0"
 
         android:fontFamily="@font/nunito_light"
         android:text="@string/empty_recent_game"
@@ -334,6 +342,7 @@
         android:background="@drawable/transparent_rounded_square"
         android:scaleType="fitCenter"
         android:clickable="false"
+        android:alpha="0"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline50Percent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -347,6 +356,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
+        android:alpha="0"
 
         android:fontFamily="@font/nunito_light"
         android:text="@string/empty_recent_game"
@@ -363,6 +373,7 @@
         android:background="@drawable/transparent_rounded_square"
         android:scaleType="fitCenter"
         android:clickable="false"
+        android:alpha="0"
         app:layout_constraintEnd_toStartOf="@+id/guideline80Percent"
         app:layout_constraintHorizontal_bias="0.855"
         app:layout_constraintStart_toStartOf="@+id/guideline80Percent"
@@ -375,6 +386,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
+        android:alpha="0"
 
         android:fontFamily="@font/nunito_light"
         android:text="@string/empty_recent_game"
@@ -391,6 +403,8 @@
         android:scaleType="centerCrop"
         android:elevation="5dp"
         android:rotation="180"
+        android:clickable="true"
+        android:focusable="true"
         app:layout_constraintEnd_toEndOf="@+id/viewDownBackground"
         app:layout_constraintStart_toStartOf="@+id/viewDownBackground"
         app:layout_constraintTop_toBottomOf="@+id/addGameButton"
@@ -410,7 +424,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guidelineBottom"
-        app:layout_constraintVertical_bias="0.27" />
+        app:layout_constraintVertical_bias="0.34" />
 
     <TextView
         android:id="@+id/textViewOptionAggressiveLMK"
@@ -420,6 +434,7 @@
         android:fontFamily="@font/nunito_bold"
         android:textSize="17sp"
         android:textColor="@color/pureWhite"
+        android:clickable="true"
 
         android:elevation="5dp"
         android:paddingStart="4dp"
@@ -427,36 +442,6 @@
         app:layout_constraintStart_toEndOf="@+id/switchOptionAggressiveLMK"
         app:layout_constraintTop_toTopOf="@+id/switchOptionAggressiveLMK" />
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/switchOptionKillServices"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:checked="true"
-        android:clickable="true"
-        android:elevation="5dp"
-        android:textOff=""
-        android:textOn=""
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline20Percent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guidelineBottom"
-        app:layout_constraintVertical_bias="0.43" />
-
-    <TextView
-        android:id="@+id/textViewOptionKillServices"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/option_kill_services"
-        android:fontFamily="@font/nunito_bold"
-        android:textSize="17sp"
-        android:textColor="@color/textTop"
-
-        android:elevation="5dp"
-        android:paddingStart="4dp"
-        app:layout_constraintBottom_toBottomOf="@+id/switchOptionKillServices"
-        app:layout_constraintStart_toEndOf="@+id/switchOptionKillServices"
-        app:layout_constraintTop_toTopOf="@+id/switchOptionKillServices" />
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/switchOptionKillApps"
@@ -472,7 +457,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guidelineBottom"
-        app:layout_constraintVertical_bias="0.6" />
+        app:layout_constraintVertical_bias="0.5" />
 
     <TextView
         android:id="@+id/textViewOptionKillApps"
@@ -482,6 +467,7 @@
         android:fontFamily="@font/nunito_bold"
         android:textSize="17sp"
         android:textColor="@color/textTop"
+        android:clickable="true"
 
         android:elevation="5dp"
         android:paddingStart="4dp"
@@ -503,7 +489,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guidelineBottom"
-        app:layout_constraintVertical_bias="0.77" />
+        app:layout_constraintVertical_bias="0.67" />
 
     <TextView
         android:id="@+id/textViewOptionKeepDPI"
@@ -513,6 +499,7 @@
         android:fontFamily="@font/nunito_bold"
         android:textSize="17sp"
         android:textColor="@color/textTop"
+        android:clickable="true"
 
         android:elevation="5dp"
         android:paddingStart="4dp"
@@ -534,7 +521,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guidelineBottom"
-        app:layout_constraintVertical_bias="0.93" />
+        app:layout_constraintVertical_bias="0.83" />
 
     <TextView
         android:id="@+id/textViewOptionOnlyAddGames"
@@ -544,6 +531,7 @@
         android:fontFamily="@font/nunito_bold"
         android:textSize="17sp"
         android:textColor="@color/textTop"
+        android:clickable="true"
 
         android:elevation="5dp"
         android:paddingStart="4dp"
@@ -551,5 +539,22 @@
         app:layout_constraintStart_toEndOf="@+id/switchOptionOnlyAddGames"
         app:layout_constraintTop_toTopOf="@+id/switchOptionOnlyAddGames" />
 
+
+    <TextView
+        android:id="@+id/textViewSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="5dp"
+        android:fontFamily="@font/nunito_bold"
+        android:text="@string/option_title"
+        android:textColor="@color/pureWhite"
+        android:textSize="30sp"
+        android:alpha="0"
+        app:layout_constraintBottom_toBottomOf="@+id/imageButtonSettingSwitch"
+        app:layout_constraintEnd_toStartOf="@+id/guideline50Percent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/guideline50Percent"
+        app:layout_constraintTop_toBottomOf="@+id/imageButtonSettingSwitch"
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

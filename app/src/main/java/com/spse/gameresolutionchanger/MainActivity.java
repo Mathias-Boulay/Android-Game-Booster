@@ -1,10 +1,12 @@
 package com.spse.gameresolutionchanger;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -33,15 +35,18 @@ public class MainActivity extends AppCompatActivity {
     TextView nativeResolution;
     TextView tweakedResolution;
     SeekBar resolutionSeekBar;
+    float[] coefficients = new float[2]; //Width, Height
 
 
     ProgressBar testBar;
     int lastProgress = 0; //This is used to set the progress before API 24
     ImageButton addGame;
+    ImageButton settingsSwitch;
 
     SettingsManager settingsManager;
     Boolean settingsShown = false;
-    com.google.android.material.switchmaterial.SwitchMaterial[] optionSwitches = new com.google.android.material.switchmaterial.SwitchMaterial[5];
+    com.google.android.material.switchmaterial.SwitchMaterial[] optionSwitches = new com.google.android.material.switchmaterial.SwitchMaterial[4];
+    TextView[] optionsTexts = new TextView[4];
 
     ConstraintSet layoutSettingsHidden = new ConstraintSet();
     ConstraintSet layoutSettingShown = new ConstraintSet();
@@ -60,46 +65,30 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    @SuppressLint("DefaultLocale")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         settingsManager = new SettingsManager(this);
 
-        //Check if we are using native resolution
-        File tmpFile = new File(this.getApplicationInfo().dataDir + "/tmp");
+        //Compute coefficient
+        coefficients[0] = computeCoefficients(true);
+        coefficients[1] = computeCoefficients(false);
 
-        if(tmpFile.exists()){
-            tmpFile.delete();
-        }else {
-            if (settingsManager.getOriginalWidth() != settingsManager.getCurrentWidth()) {
+        //Check if we are using native resolution
+        if (settingsManager.getOriginalWidth() != settingsManager.getCurrentWidth()) {
                 showResetPopup();
             }
-        }
-
-        /*
-        if (settingsManager.getOriginalWidth() != settingsManager.getCurrentWidth()){
-
-            settingsManager.setScreenDimension(settingsManager.getOriginalHeight(), settingsManager.getOriginalWidth());
-
-        }
-
-
-        if(new File(MainActivity.this.getApplicationInfo().dataDir + "/lastLMKProfile.backup").exists()){
-            GameAppManager.restoreOriginalLMK(this);
-        }
-
-         */
-
 
         //Mostly linking stuff to the view
         FPSPercentage = findViewById(R.id.textViewPercentage);
-        FPSPercentage.setText("+" + (int)(settingsManager.getLastResolutionScale()*0.8) + "%");
+        FPSPercentage.setText(String.format("+%d%%", (int) (settingsManager.getLastResolutionScale() * 0.8)));
 
         nativeResolution = findViewById(R.id.textViewNativeResolution);
-        nativeResolution.setText(settingsManager.getOriginalHeight()+"x"+settingsManager.getOriginalWidth());
+        nativeResolution.setText(String.format("%dx%d", settingsManager.getOriginalHeight(), settingsManager.getOriginalWidth()));
         tweakedResolution = findViewById(R.id.textViewTweakedResolution);
-        tweakedResolution.setText((int)((computeCoefficients(false)*settingsManager.getLastResolutionScale()) + settingsManager.getOriginalHeight()) +"x"+ (int)((computeCoefficients(true)*settingsManager.getLastResolutionScale()) + settingsManager.getOriginalWidth()));
+        tweakedResolution.setText(String.format("%dx%d", (int) ((coefficients[1] * settingsManager.getLastResolutionScale()) + settingsManager.getOriginalHeight()), (int) ((coefficients[0] * settingsManager.getLastResolutionScale()) + settingsManager.getOriginalWidth())));
 
 
 
@@ -127,6 +116,9 @@ public class MainActivity extends AppCompatActivity {
         //Add the click listener for all of them;
         setOptionsOnClickListener();
 
+        //Make them uncheckable since there are hidden
+        setOptionsClickable(false);
+
 
         //Recent GameApps
         initializeRecentGames();
@@ -136,8 +128,8 @@ public class MainActivity extends AppCompatActivity {
         layoutSettingsHidden.clone((ConstraintLayout) findViewById(R.id.MainActivity));
         layoutSettingShown.clone(this, R.layout.activity_main_options_shown);
 
-        ImageButton testButton = findViewById(R.id.imageButtonSettingSwitch);
-        testButton.setOnClickListener(new View.OnClickListener() {
+        settingsSwitch = findViewById(R.id.imageButtonSettingSwitch);
+        settingsSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 TransitionManager.beginDelayedTransition((ConstraintLayout) findViewById(R.id.MainActivity));
@@ -160,6 +152,9 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
+
+
         init();
 
 
@@ -170,9 +165,9 @@ public class MainActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 testBar.incrementProgressBy((i- lastProgress));
                 lastProgress = i;
-                FPSPercentage.setText("+" + (int)(i*0.8) + "%");
+                FPSPercentage.setText(String.format("+%d%%", (int) (i * 0.8)));
 
-                tweakedResolution.setText((int)((computeCoefficients(false)*i) + settingsManager.getOriginalHeight()) +"x"+ (int)((computeCoefficients(true)*i) + settingsManager.getOriginalWidth()));
+                tweakedResolution.setText(String.format("%dx%d", (int) (Math.ceil(coefficients[1] * i) + settingsManager.getOriginalHeight()), (int) (Math.ceil(coefficients[0] * i) + settingsManager.getOriginalWidth())));
             }
 
             @Override
@@ -185,9 +180,7 @@ public class MainActivity extends AppCompatActivity {
         addGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("ADDGAME BUTTON","BUTTON CLICKED !");
-                gameList = GameAppManager.getGameApps(MainActivity.this);
-                showGameListPopup(MainActivity.this);
+                showAddGame();
             }
         });
 
@@ -197,22 +190,7 @@ public class MainActivity extends AppCompatActivity {
     void init() {
         if (ExecuteADBCommands.canRunRootCommands()){
             Log.d("ROOT TEST","Nice, we have root access !");
-            ArrayList<String> Commands = new ArrayList<>();
-            Commands.add("su -c wm size >> " + MainActivity.this.getApplicationInfo().dataDir + "/test.test");
-
-            ExecuteADBCommands.execute(Commands,true);
-
-
         }
-
-        //It is only the software values, furthermore it is unable to make abstraction of the bottom bar
-        Log.d("DISPLAY WIDTH: ", String.valueOf(getResources().getDisplayMetrics().widthPixels));
-        Log.d("DISPLAY HEIGHT: ", String.valueOf(getResources().getDisplayMetrics().heightPixels));
-
-        Log.d("DISPLAY DENSITY: ", String.valueOf(getResources().getDisplayMetrics().densityDpi));
-
-
-
         return;
     }
 
@@ -223,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
         int yScreen = context.getResources().getDisplayMetrics().heightPixels;
 
         gameListPopUp.setContentView(R.layout.add_game_layout);
-        gameListPopUp.getWindow().setLayout((int) Math.ceil(xScreen*0.90),(int) Math.ceil(yScreen*0.85) );
+        gameListPopUp.getWindow().setLayout((int) Math.ceil(xScreen*0.90),(int) Math.min(Math.ceil(yScreen*0.85),gameList.size()*200 ) + (settingsManager.onlyAddGames() ? 200 : 0) );//The magic number 200 correspond to one GameApp item + one space
 
         LinearLayout layout = (LinearLayout) gameListPopUp.findViewById(R.id.gameListLayout);
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -263,6 +241,23 @@ public class MainActivity extends AppCompatActivity {
 
 
         }
+        if(settingsManager.onlyAddGames()){
+            View lastChild = inflater.inflate(R.layout.no_game_app_item, null);
+            layout.addView(lastChild);
+            lastChild.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Change the option to only add every app
+                    settingsManager.setOnlyAddGames(false);
+                    optionSwitches[3].setChecked(false);
+
+                    gameListPopUp.dismiss();
+                    gameList = GameAppManager.getGameApps(MainActivity.this);
+                    showGameListPopup(MainActivity.this);
+
+                }
+            });
+        }
 
 
 
@@ -281,26 +276,34 @@ public class MainActivity extends AppCompatActivity {
     private void initializeOptions(){
         //Link option switches
         optionSwitches[0] = findViewById(R.id.switchOptionAggressiveLMK);
-        optionSwitches[1] = findViewById(R.id.switchOptionKillServices);
-        optionSwitches[2] = findViewById(R.id.switchOptionKillApps);
-        optionSwitches[3] = findViewById(R.id.switchOptionKeepDPI);
-        optionSwitches[4] = findViewById(R.id.switchOptionOnlyAddGames);
+        optionSwitches[1] = findViewById(R.id.switchOptionKillApps);
+        optionSwitches[2] = findViewById(R.id.switchOptionKeepDPI);
+        optionSwitches[3] = findViewById(R.id.switchOptionOnlyAddGames);
 
         //Load their previous state:
         optionSwitches[0].setChecked(settingsManager.isLMKActivated());
-        optionSwitches[1].setChecked(settingsManager.killServices());
-        optionSwitches[2].setChecked(settingsManager.isMurderer());
-        optionSwitches[3].setChecked(settingsManager.keepStockDPI());
-        optionSwitches[4].setChecked(settingsManager.onlyAddGames());
+        optionSwitches[1].setChecked(settingsManager.isMurderer());
+        optionSwitches[2].setChecked(settingsManager.keepStockDPI());
+        optionSwitches[3].setChecked(settingsManager.onlyAddGames());
+
+        //Link options text
+        optionsTexts[0] = findViewById(R.id.textViewOptionAggressiveLMK);
+        optionsTexts[1] = findViewById(R.id.textViewOptionKillApps);
+        optionsTexts[2] = findViewById(R.id.textViewOptionKeepDPI);
+        optionsTexts[3] = findViewById(R.id.textViewOptionOnlyAddGames);
+
+
     }
 
     public void setOptionsClickable(boolean state){
-        for(int i = 0; i<5; i++){
+        for(int i = 0; i<optionSwitches.length; i++){
             optionSwitches[i].setClickable(state);
+            optionsTexts[i].setClickable(state);
         }
     }
 
     public void setOptionsOnClickListener(){
+        //First the switches themselves:
         optionSwitches[0].setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -311,28 +314,55 @@ public class MainActivity extends AppCompatActivity {
         optionSwitches[1].setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                settingsManager.setKillServices(optionSwitches[1].isChecked());
+                settingsManager.setMurderer(optionSwitches[1].isChecked());
             }
         });
 
         optionSwitches[2].setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                settingsManager.setMurderer(optionSwitches[2].isChecked());
+                settingsManager.setKeepStockDPI(optionSwitches[2].isChecked());
             }
         });
 
         optionSwitches[3].setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                settingsManager.setKeepStockDPI(optionSwitches[3].isChecked());
+                settingsManager.setOnlyAddGames(optionSwitches[3].isChecked());
             }
         });
 
-        optionSwitches[4].setOnClickListener(new View.OnClickListener() {
+        //Then the associated text:
+
+        optionsTexts[0].setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                settingsManager.setOnlyAddGames(optionSwitches[4].isChecked());
+                optionSwitches[0].setChecked(!optionSwitches[0].isChecked());
+                settingsManager.setLMK(optionSwitches[0].isChecked());
+            }
+        });
+
+        optionsTexts[1].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                optionSwitches[1].setChecked(!optionSwitches[1].isChecked());
+                settingsManager.setMurderer(optionSwitches[1].isChecked());
+            }
+        });
+
+        optionsTexts[2].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                optionSwitches[2].setChecked(!optionSwitches[2].isChecked());
+                settingsManager.setKeepStockDPI(optionSwitches[2].isChecked());
+            }
+        });
+
+        optionsTexts[3].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                optionSwitches[3].setChecked(!optionSwitches[3].isChecked());
+                settingsManager.setOnlyAddGames(optionSwitches[3].isChecked());
             }
         });
     }
@@ -365,6 +395,14 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         GameAppManager.launchGameApp(MainActivity.this, recentGameApp[finalI].getPackageName());
+                    }
+                });
+            }else{
+                //No game yet, let's add a game
+                recentGameAppLogo[i].setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showAddGame();
                     }
                 });
             }
@@ -416,4 +454,18 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    private void showAddGame(){
+        gameList = GameAppManager.getGameApps(MainActivity.this);
+        showGameListPopup(MainActivity.this);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (settingsShown){
+            //Simulate a button click on the setting switch button
+            settingsSwitch.performClick();
+            return;
+        }
+        super.onBackPressed();
+    }
 }

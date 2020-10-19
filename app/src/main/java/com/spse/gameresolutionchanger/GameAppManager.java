@@ -22,6 +22,7 @@ import java.util.List;
 
 public class GameAppManager {
 
+
     public static List<GameApp> getGameApps(MainActivity context){
         PackageManager gamePM = context.getPackageManager();
         List<GameApp> gameAppList = new ArrayList<>();
@@ -75,7 +76,19 @@ public class GameAppManager {
     }
 
     private static boolean isValidPackage(MainActivity context, PackageInfo pkgInfo){
-        return (isGamePackage(context, pkgInfo.applicationInfo) && !isSystemPackage(pkgInfo) && !pkgInfo.packageName.equals(context.getApplicationContext().getPackageName()));
+        for(int i=1;i<=6;i++){
+            if(context.settingsManager.getRecentGameApp(i) != null){
+                if(context.settingsManager.getRecentGameApp(i).getPackageName().equals(pkgInfo.packageName)){
+                    return false;
+                }
+            }
+        }
+
+        return (isGamePackage(context, pkgInfo.applicationInfo)
+                && !isSystemPackage(pkgInfo)
+                && !pkgInfo.packageName.equals(context.getApplicationContext().getPackageName())
+
+        );
     }
 
     private static void murderApps(MainActivity context){
@@ -132,16 +145,17 @@ public class GameAppManager {
 
 
         //Changing the DPI causes the activity layout to restart from scratch, so we have to let a trace informing that we are just changing stuff, not relaunching the app:
+        /*
         if(!st.keepStockDPI()) {
             ExecuteADBCommands.execute("echo '' > " + context.getApplicationInfo().dataDir + "/tmp", true);
-        }
+        }*/
 
         //Save the resolution chosen for the game:
         st.setLastResolutionScale(context.resolutionSeekBar.getProgress());
 
         st.setScreenDimension(
-                (int)((context.computeCoefficients(false)*resolutionScale) + st.getOriginalHeight()),
-                (int)((context.computeCoefficients(true)*resolutionScale) + st.getOriginalWidth())
+                (int)(Math.ceil(context.coefficients[1]*resolutionScale) + st.getOriginalHeight()),
+                (int)(Math.ceil(context.coefficients[0]*resolutionScale) + st.getOriginalWidth())
         );
 
         if(st.isMurderer()){
@@ -149,7 +163,7 @@ public class GameAppManager {
         }
 
         if(st.isLMKActivated()){
-
+            activateLMK(context);
         }
 
 
@@ -160,7 +174,8 @@ public class GameAppManager {
             context.startActivity(launchIntent);//null pointer check in case package name was not found
 
             //Then I kill myself to let all the memory for the game;
-            context.finishAndRemoveTask();
+            ExecuteADBCommands.execute("am force-stop " + context.getApplicationInfo().packageName, true);
+            //context.finishAndRemoveTask();
 
         }
     }
