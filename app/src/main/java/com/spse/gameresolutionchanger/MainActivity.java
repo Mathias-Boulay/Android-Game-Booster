@@ -1,12 +1,12 @@
 package com.spse.gameresolutionchanger;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -17,6 +17,7 @@ import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -25,14 +26,11 @@ import android.widget.SeekBar;
 import android.widget.Space;
 import android.widget.TextView;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     //Options variables
     TextView FPSPercentage;
-    TextView nativeResolution;
     TextView tweakedResolution;
     SeekBar resolutionSeekBar;
     float[] coefficients = new float[2]; //Width, Height
@@ -45,8 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
     SettingsManager settingsManager;
     Boolean settingsShown = false;
-    com.google.android.material.switchmaterial.SwitchMaterial[] optionSwitches = new com.google.android.material.switchmaterial.SwitchMaterial[4];
-    TextView[] optionsTexts = new TextView[4];
+    CheckBox[] optionCheckboxes = new CheckBox[3];
 
     ConstraintSet layoutSettingsHidden = new ConstraintSet();
     ConstraintSet layoutSettingShown = new ConstraintSet();
@@ -85,8 +82,8 @@ public class MainActivity extends AppCompatActivity {
         FPSPercentage = findViewById(R.id.textViewPercentage);
         FPSPercentage.setText(String.format("+%d%%", (int) (settingsManager.getLastResolutionScale() * 0.8)));
 
-        nativeResolution = findViewById(R.id.textViewNativeResolution);
-        nativeResolution.setText(String.format("%dx%d", settingsManager.getOriginalHeight(), settingsManager.getOriginalWidth()));
+        TextView nativeResolution = findViewById(R.id.textViewNativeResolution);
+        nativeResolution.setText(String.format("%s\n%dx%d", getString(R.string.resolution), settingsManager.getOriginalHeight(), settingsManager.getOriginalWidth()));
         tweakedResolution = findViewById(R.id.textViewTweakedResolution);
         tweakedResolution.setText(String.format("%dx%d", (int) ((coefficients[1] * settingsManager.getLastResolutionScale()) + settingsManager.getOriginalHeight()), (int) ((coefficients[0] * settingsManager.getLastResolutionScale()) + settingsManager.getOriginalWidth())));
 
@@ -167,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
                 lastProgress = i;
                 FPSPercentage.setText(String.format("+%d%%", (int) (i * 0.8)));
 
-                tweakedResolution.setText(String.format("%dx%d", (int) (Math.ceil(coefficients[1] * i) + settingsManager.getOriginalHeight()), (int) (Math.ceil(coefficients[0] * i) + settingsManager.getOriginalWidth())));
+                tweakedResolution.setText(String.format("%s\n%dx%d", getString(R.string.resolution_tweaked),(int) (Math.ceil(coefficients[1] * i) + settingsManager.getOriginalHeight()), (int) (Math.ceil(coefficients[0] * i) + settingsManager.getOriginalWidth())));
             }
 
             @Override
@@ -180,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
         addGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showAddGame();
+                showAddGame(true);
             }
         });
 
@@ -191,17 +188,19 @@ public class MainActivity extends AppCompatActivity {
         if (ExecuteADBCommands.canRunRootCommands()){
             Log.d("ROOT TEST","Nice, we have root access !");
         }
+        Log.d("DEVICE RAM","IS LOW ?");
+
         return;
     }
 
-    void showGameListPopup(Context context){
+    void showGameListPopup(Context context, boolean onlyAddGames){
         long test = System.currentTimeMillis();
 
         int xScreen = context.getResources().getDisplayMetrics().widthPixels;
         int yScreen = context.getResources().getDisplayMetrics().heightPixels;
 
         gameListPopUp.setContentView(R.layout.add_game_layout);
-        gameListPopUp.getWindow().setLayout((int) Math.ceil(xScreen*0.90),(int) Math.min(Math.ceil(yScreen*0.85),gameList.size()*200 ) + (settingsManager.onlyAddGames() ? 200 : 0) );//The magic number 200 correspond to one GameApp item + one space
+        gameListPopUp.getWindow().setLayout((int) Math.ceil(xScreen*0.90),(int) Math.min(Math.ceil(yScreen*0.85),gameList.size()*200 ) + (onlyAddGames ? 200 : 0) );//The magic number 200 correspond to one GameApp item + one space
 
         LinearLayout layout = (LinearLayout) gameListPopUp.findViewById(R.id.gameListLayout);
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -241,19 +240,16 @@ public class MainActivity extends AppCompatActivity {
 
 
         }
-        if(settingsManager.onlyAddGames()){
+        if(onlyAddGames){
             View lastChild = inflater.inflate(R.layout.no_game_app_item, null);
             layout.addView(lastChild);
             lastChild.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //Change the option to only add every app
-                    settingsManager.setOnlyAddGames(false);
-                    optionSwitches[3].setChecked(false);
 
                     gameListPopUp.dismiss();
-                    gameList = GameAppManager.getGameApps(MainActivity.this);
-                    showGameListPopup(MainActivity.this);
+                    gameList = GameAppManager.getGameApps(MainActivity.this, false);
+                    showGameListPopup(MainActivity.this, false);
 
                 }
             });
@@ -275,94 +271,44 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeOptions(){
         //Link option switches
-        optionSwitches[0] = findViewById(R.id.switchOptionAggressiveLMK);
-        optionSwitches[1] = findViewById(R.id.switchOptionKillApps);
-        optionSwitches[2] = findViewById(R.id.switchOptionKeepDPI);
-        optionSwitches[3] = findViewById(R.id.switchOptionOnlyAddGames);
+        optionCheckboxes[0] = findViewById(R.id.checkBoxAggressive);
+        optionCheckboxes[1] = findViewById(R.id.checkBoxMurderer);
+        optionCheckboxes[2] = findViewById(R.id.checkBoxStockDPI);
 
         //Load their previous state:
-        optionSwitches[0].setChecked(settingsManager.isLMKActivated());
-        optionSwitches[1].setChecked(settingsManager.isMurderer());
-        optionSwitches[2].setChecked(settingsManager.keepStockDPI());
-        optionSwitches[3].setChecked(settingsManager.onlyAddGames());
-
-        //Link options text
-        optionsTexts[0] = findViewById(R.id.textViewOptionAggressiveLMK);
-        optionsTexts[1] = findViewById(R.id.textViewOptionKillApps);
-        optionsTexts[2] = findViewById(R.id.textViewOptionKeepDPI);
-        optionsTexts[3] = findViewById(R.id.textViewOptionOnlyAddGames);
+        optionCheckboxes[0].setChecked(settingsManager.isLMKActivated());
+        optionCheckboxes[1].setChecked(settingsManager.isMurderer());
+        optionCheckboxes[2].setChecked(settingsManager.keepStockDPI());
 
 
     }
 
     public void setOptionsClickable(boolean state){
-        for(int i = 0; i<optionSwitches.length; i++){
-            optionSwitches[i].setClickable(state);
-            optionsTexts[i].setClickable(state);
+        for(int i = 0; i< optionCheckboxes.length; i++){
+            optionCheckboxes[i].setClickable(state);
         }
     }
 
     public void setOptionsOnClickListener(){
         //First the switches themselves:
-        optionSwitches[0].setOnClickListener(new View.OnClickListener() {
+        optionCheckboxes[0].setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                settingsManager.setLMK(optionSwitches[0].isChecked());
+                settingsManager.setLMK(optionCheckboxes[0].isChecked());
             }
         });
 
-        optionSwitches[1].setOnClickListener(new View.OnClickListener() {
+        optionCheckboxes[1].setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                settingsManager.setMurderer(optionSwitches[1].isChecked());
+                settingsManager.setMurderer(optionCheckboxes[1].isChecked());
             }
         });
 
-        optionSwitches[2].setOnClickListener(new View.OnClickListener() {
+        optionCheckboxes[2].setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                settingsManager.setKeepStockDPI(optionSwitches[2].isChecked());
-            }
-        });
-
-        optionSwitches[3].setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                settingsManager.setOnlyAddGames(optionSwitches[3].isChecked());
-            }
-        });
-
-        //Then the associated text:
-
-        optionsTexts[0].setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                optionSwitches[0].setChecked(!optionSwitches[0].isChecked());
-                settingsManager.setLMK(optionSwitches[0].isChecked());
-            }
-        });
-
-        optionsTexts[1].setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                optionSwitches[1].setChecked(!optionSwitches[1].isChecked());
-                settingsManager.setMurderer(optionSwitches[1].isChecked());
-            }
-        });
-
-        optionsTexts[2].setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                optionSwitches[2].setChecked(!optionSwitches[2].isChecked());
-                settingsManager.setKeepStockDPI(optionSwitches[2].isChecked());
-            }
-        });
-
-        optionsTexts[3].setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                optionSwitches[3].setChecked(!optionSwitches[3].isChecked());
-                settingsManager.setOnlyAddGames(optionSwitches[3].isChecked());
+                settingsManager.setKeepStockDPI(optionCheckboxes[2].isChecked());
             }
         });
     }
@@ -402,7 +348,7 @@ public class MainActivity extends AppCompatActivity {
                 recentGameAppLogo[i].setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        showAddGame();
+                        showAddGame(true);
                     }
                 });
             }
@@ -454,9 +400,9 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void showAddGame(){
-        gameList = GameAppManager.getGameApps(MainActivity.this);
-        showGameListPopup(MainActivity.this);
+    private void showAddGame(boolean onlyAddGames){
+        gameList = GameAppManager.getGameApps(MainActivity.this, onlyAddGames);
+        showGameListPopup(MainActivity.this, onlyAddGames);
     }
 
     @Override

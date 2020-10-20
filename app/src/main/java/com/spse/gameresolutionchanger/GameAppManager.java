@@ -23,14 +23,14 @@ import java.util.List;
 public class GameAppManager {
 
 
-    public static List<GameApp> getGameApps(MainActivity context){
+    public static List<GameApp> getGameApps(MainActivity context, boolean onlyAddGames){
         PackageManager gamePM = context.getPackageManager();
         List<GameApp> gameAppList = new ArrayList<>();
         List<PackageInfo> gameAppInfo = gamePM.getInstalledPackages(0);
 
         for(PackageInfo info : gameAppInfo){
 
-            if (isValidPackage(context, info)) {
+            if (isValidPackage(context, info, onlyAddGames)) {
                 String appName = info.applicationInfo.loadLabel(gamePM).toString();
                 String packages = info.applicationInfo.packageName;
 
@@ -67,15 +67,15 @@ public class GameAppManager {
     }
 
     @SuppressLint("NewApi")
-    private static boolean isGamePackage(MainActivity context, ApplicationInfo appInfo) {
+    private static boolean isGamePackage(MainActivity context, ApplicationInfo appInfo, boolean onlyAddGames) {
         //Little hack to just consider everything as a game when we want everything
-        if(!context.settingsManager.onlyAddGames()){return true;}
+        if(!onlyAddGames){return true;}
 
         //Check both the new and deprecated flag since some apps only use the deprecated one...
         return ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) && (appInfo.category == ApplicationInfo.CATEGORY_GAME)) || ((appInfo.flags & ApplicationInfo.FLAG_IS_GAME) == ApplicationInfo.FLAG_IS_GAME);
     }
 
-    private static boolean isValidPackage(MainActivity context, PackageInfo pkgInfo){
+    private static boolean isValidPackage(MainActivity context, PackageInfo pkgInfo, boolean onlyAddGames){
         for(int i=1;i<=6;i++){
             if(context.settingsManager.getRecentGameApp(i) != null){
                 if(context.settingsManager.getRecentGameApp(i).getPackageName().equals(pkgInfo.packageName)){
@@ -84,7 +84,7 @@ public class GameAppManager {
             }
         }
 
-        return (isGamePackage(context, pkgInfo.applicationInfo)
+        return (isGamePackage(context, pkgInfo.applicationInfo, onlyAddGames)
                 && !isSystemPackage(pkgInfo)
                 && !pkgInfo.packageName.equals(context.getApplicationContext().getPackageName())
 
@@ -143,12 +143,6 @@ public class GameAppManager {
         SettingsManager st = context.settingsManager;
         int resolutionScale = context.resolutionSeekBar.getProgress();
 
-
-        //Changing the DPI causes the activity layout to restart from scratch, so we have to let a trace informing that we are just changing stuff, not relaunching the app:
-        /*
-        if(!st.keepStockDPI()) {
-            ExecuteADBCommands.execute("echo '' > " + context.getApplicationInfo().dataDir + "/tmp", true);
-        }*/
 
         //Save the resolution chosen for the game:
         st.setLastResolutionScale(context.resolutionSeekBar.getProgress());

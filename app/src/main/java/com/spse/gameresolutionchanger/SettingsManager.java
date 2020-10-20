@@ -11,7 +11,6 @@ import java.util.ArrayList;
 
 public class SettingsManager {
     //PUBLIC OPTIONS
-    private boolean ONLY_ADD_GAMES;
     private boolean KEEP_STOCK_DPI;
     private boolean AGGRESSIVE_LOW_MEMORY_KILLER;
     private boolean KILL_ALL_OTHER_APPS;
@@ -35,7 +34,6 @@ public class SettingsManager {
         displayStats[1] = point.y;
         displayStats[2] = activity.getResources().getDisplayMetrics().densityDpi;
 
-        ONLY_ADD_GAMES = preferences.getBoolean("onlyAddGames", true);
         AGGRESSIVE_LOW_MEMORY_KILLER = preferences.getBoolean("aggressiveLMK", false);
         KILL_ALL_OTHER_APPS = preferences.getBoolean("isMurderer", false);
         KEEP_STOCK_DPI = preferences.getBoolean("keepStockDPI", false);
@@ -79,10 +77,6 @@ public class SettingsManager {
 
     public GameApp getRecentGameApp(int index){
         return GameAppManager.getGameApp(activity, preferences.getString(String.valueOf(index).concat("thGame"),""));
-    }
-
-    public boolean onlyAddGames(){
-        return ONLY_ADD_GAMES;
     }
 
     public boolean isLMKActivated(){
@@ -163,15 +157,6 @@ public class SettingsManager {
         //Then the last added game
         editor.putString("1thGame", packageName);
 
-        editor.apply();
-    }
-
-
-    public void setOnlyAddGames(boolean state){
-        ONLY_ADD_GAMES = state;
-
-        editor = preferences.edit();
-        editor.putBoolean("onlyAddGames", state);
         editor.apply();
     }
 

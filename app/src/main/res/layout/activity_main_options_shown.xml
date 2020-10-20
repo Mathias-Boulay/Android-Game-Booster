@@ -66,6 +66,7 @@
         android:indeterminate="false"
         android:max="100"
         android:progress="0"
+        android:alpha="100"
 
         android:progressDrawable="@drawable/progress"
         app:layout_constraintBottom_toTopOf="@+id/guideline"
@@ -83,7 +84,6 @@
         android:layout_marginEnd="30dp"
         android:background="@drawable/background_resolution_slider"
         android:elevation="2dp"
-        android:indeterminateTint="@color/foregroundProgressBar"
 
         android:paddingStart="45dp"
         android:paddingEnd="45dp"
@@ -410,136 +410,6 @@
         app:layout_constraintTop_toBottomOf="@+id/addGameButton"
         app:srcCompat="@drawable/ic_round_keyboard_arrow_up_24" />
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/switchOptionAggressiveLMK"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:checked="true"
-        android:clickable="true"
-        android:elevation="5dp"
-        android:textOff=""
-        android:textOn=""
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline20Percent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guidelineBottom"
-        app:layout_constraintVertical_bias="0.34" />
-
-    <TextView
-        android:id="@+id/textViewOptionAggressiveLMK"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/option_aggressive_LMK"
-        android:fontFamily="@font/nunito_bold"
-        android:textSize="17sp"
-        android:textColor="@color/pureWhite"
-        android:clickable="true"
-
-        android:elevation="5dp"
-        android:paddingStart="4dp"
-        app:layout_constraintBottom_toBottomOf="@+id/switchOptionAggressiveLMK"
-        app:layout_constraintStart_toEndOf="@+id/switchOptionAggressiveLMK"
-        app:layout_constraintTop_toTopOf="@+id/switchOptionAggressiveLMK" />
-
-
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/switchOptionKillApps"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:checked="true"
-        android:clickable="true"
-        android:elevation="5dp"
-        android:textOff=""
-        android:textOn=""
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline20Percent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guidelineBottom"
-        app:layout_constraintVertical_bias="0.5" />
-
-    <TextView
-        android:id="@+id/textViewOptionKillApps"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/option_kill_apps"
-        android:fontFamily="@font/nunito_bold"
-        android:textSize="17sp"
-        android:textColor="@color/textTop"
-        android:clickable="true"
-
-        android:elevation="5dp"
-        android:paddingStart="4dp"
-        app:layout_constraintBottom_toBottomOf="@+id/switchOptionKillApps"
-        app:layout_constraintStart_toEndOf="@+id/switchOptionKillApps"
-        app:layout_constraintTop_toTopOf="@+id/switchOptionKillApps" />
-
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/switchOptionKeepDPI"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:checked="true"
-        android:clickable="true"
-        android:elevation="5dp"
-        android:textOff=""
-        android:textOn=""
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline20Percent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guidelineBottom"
-        app:layout_constraintVertical_bias="0.67" />
-
-    <TextView
-        android:id="@+id/textViewOptionKeepDPI"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/option_keep_DPI"
-        android:fontFamily="@font/nunito_bold"
-        android:textSize="17sp"
-        android:textColor="@color/textTop"
-        android:clickable="true"
-
-        android:elevation="5dp"
-        android:paddingStart="4dp"
-        app:layout_constraintBottom_toBottomOf="@+id/switchOptionKeepDPI"
-        app:layout_constraintStart_toEndOf="@+id/switchOptionKeepDPI"
-        app:layout_constraintTop_toTopOf="@+id/switchOptionKeepDPI" />
-
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/switchOptionOnlyAddGames"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:checked="true"
-        android:clickable="true"
-        android:elevation="5dp"
-        android:textOff=""
-        android:textOn=""
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline20Percent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guidelineBottom"
-        app:layout_constraintVertical_bias="0.83" />
-
-    <TextView
-        android:id="@+id/textViewOptionOnlyAddGames"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/option_only_add_games"
-        android:fontFamily="@font/nunito_bold"
-        android:textSize="17sp"
-        android:textColor="@color/textTop"
-        android:clickable="true"
-
-        android:elevation="5dp"
-        android:paddingStart="4dp"
-        app:layout_constraintBottom_toBottomOf="@+id/switchOptionOnlyAddGames"
-        app:layout_constraintStart_toEndOf="@+id/switchOptionOnlyAddGames"
-        app:layout_constraintTop_toTopOf="@+id/switchOptionOnlyAddGames" />
-
-
     <TextView
         android:id="@+id/textViewSettings"
         android:layout_width="wrap_content"
@@ -556,5 +426,58 @@
         app:layout_constraintStart_toStartOf="@+id/guideline50Percent"
         app:layout_constraintTop_toBottomOf="@+id/imageButtonSettingSwitch"
         app:layout_constraintVertical_bias="0.0" />
+
+    <CheckBox
+        android:id="@+id/checkBoxAggressive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="5dp"
+        android:fontFamily="@font/nunito_bold"
+        android:text="@string/option_aggressive_LMK"
+        android:alpha="100"
+        android:paddingStart="4dp"
+        android:layout_marginStart="6dp"
+
+        android:textSize="17sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guidelineBottom"
+        app:layout_constraintVertical_bias="0.45" />
+
+    <CheckBox
+        android:id="@+id/checkBoxMurderer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="5dp"
+        android:fontFamily="@font/nunito_bold"
+        android:text="@string/option_kill_apps"
+        android:alpha="100"
+        android:paddingStart="4dp"
+        android:layout_marginStart="6dp"
+
+        android:textSize="17sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guidelineBottom"
+        app:layout_constraintVertical_bias="0.60" />
+
+    <CheckBox
+        android:id="@+id/checkBoxStockDPI"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="5dp"
+        android:fontFamily="@font/nunito_bold"
+        android:text="@string/option_keep_DPI"
+        android:alpha="100"
+        android:paddingStart="4dp"
+        android:layout_marginStart="6dp"
+
+        android:textSize="17sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guidelineBottom"
+        app:layout_constraintVertical_bias="0.75" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
