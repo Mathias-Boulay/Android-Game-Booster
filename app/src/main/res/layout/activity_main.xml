@@ -236,6 +236,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:maxWidth="105dp"
 
         android:fontFamily="@font/nunito_light"
         android:text="@string/empty_recent_game"
@@ -264,6 +267,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:maxWidth="105dp"
 
         android:fontFamily="@font/nunito_light"
         android:text="@string/empty_recent_game"
@@ -292,6 +298,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:maxWidth="105dp"
 
         android:fontFamily="@font/nunito_light"
         android:text="@string/empty_recent_game"
@@ -320,6 +329,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:maxWidth="105dp"
 
         android:fontFamily="@font/nunito_light"
         android:text="@string/empty_recent_game"
@@ -348,6 +360,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:maxWidth="105dp"
 
         android:fontFamily="@font/nunito_light"
         android:text="@string/empty_recent_game"
@@ -376,6 +391,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:maxWidth="105dp"
 
         android:fontFamily="@font/nunito_light"
         android:text="@string/empty_recent_game"

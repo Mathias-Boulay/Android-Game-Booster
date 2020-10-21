@@ -30,16 +30,17 @@ public class GameAppManager {
 
         for(PackageInfo info : gameAppInfo){
 
-            if (isValidPackage(context, info, onlyAddGames)) {
-                String appName = info.applicationInfo.loadLabel(gamePM).toString();
-                String packages = info.applicationInfo.packageName;
-
-                WrappedDrawable wrappedIcon = new WrappedDrawable(info.applicationInfo.loadIcon(gamePM));
-                wrappedIcon.setBounds(0,0,160,160);
-
-                gameAppList.add(new GameApp(appName, wrappedIcon, packages));
-
+            if (!isValidPackage(context, info, onlyAddGames)) {
+                continue;
             }
+
+            String appName = info.applicationInfo.loadLabel(gamePM).toString();
+            String packages = info.applicationInfo.packageName;
+
+            WrappedDrawable wrappedIcon = new WrappedDrawable(info.applicationInfo.loadIcon(gamePM));
+            wrappedIcon.setBounds(0,0,160,160);
+
+            gameAppList.add(new GameApp(appName, wrappedIcon, packages));
 
         }
         return gameAppList;
@@ -76,19 +77,25 @@ public class GameAppManager {
     }
 
     private static boolean isValidPackage(MainActivity context, PackageInfo pkgInfo, boolean onlyAddGames){
-        for(int i=1;i<=6;i++){
-            if(context.settingsManager.getRecentGameApp(i) != null){
-                if(context.settingsManager.getRecentGameApp(i).getPackageName().equals(pkgInfo.packageName)){
-                    return false;
-                }
-            }
-        }
 
-        return (isGamePackage(context, pkgInfo.applicationInfo, onlyAddGames)
+        if((isGamePackage(context, pkgInfo.applicationInfo, onlyAddGames)
                 && !isSystemPackage(pkgInfo)
                 && !pkgInfo.packageName.equals(context.getApplicationContext().getPackageName())
 
-        );
+        )){
+            for(int i=1;i<=6;i++){
+                if(context.settingsManager.getRecentGameApp(i) != null){
+                    if(context.settingsManager.getRecentGameApp(i).getPackageName().equals(pkgInfo.packageName)){
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
+
+
+
     }
 
     private static void murderApps(MainActivity context){

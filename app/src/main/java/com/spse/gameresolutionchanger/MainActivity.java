@@ -6,7 +6,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
 import android.annotation.SuppressLint;
-import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -36,9 +35,8 @@ public class MainActivity extends AppCompatActivity {
     float[] coefficients = new float[2]; //Width, Height
 
 
-    ProgressBar testBar;
+    ProgressBar circularProgressBar;
     int lastProgress = 0; //This is used to set the progress before API 24
-    ImageButton addGame;
     ImageButton settingsSwitch;
 
     SettingsManager settingsManager;
@@ -48,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     ConstraintSet layoutSettingsHidden = new ConstraintSet();
     ConstraintSet layoutSettingShown = new ConstraintSet();
 
-    Dialog gameListPopUp;
+    //Dialog gameListPopUp;
     List<GameApp> gameList;
 
     //Recently added games
@@ -57,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
     ImageButton[] recentGameAppLogo = new ImageButton[6];
 
 
-    AlertDialog dialog;
 
 
 
@@ -66,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         setContentView(R.layout.activity_main);
         settingsManager = new SettingsManager(this);
 
@@ -85,21 +84,21 @@ public class MainActivity extends AppCompatActivity {
         TextView nativeResolution = findViewById(R.id.textViewNativeResolution);
         nativeResolution.setText(String.format("%s\n%dx%d", getString(R.string.resolution), settingsManager.getOriginalHeight(), settingsManager.getOriginalWidth()));
         tweakedResolution = findViewById(R.id.textViewTweakedResolution);
-        tweakedResolution.setText(String.format("%dx%d", (int) ((coefficients[1] * settingsManager.getLastResolutionScale()) + settingsManager.getOriginalHeight()), (int) ((coefficients[0] * settingsManager.getLastResolutionScale()) + settingsManager.getOriginalWidth())));
+        tweakedResolution.setText(String.format("%s\n%dx%d", getString(R.string.resolution_tweaked),(int) ((coefficients[1] * settingsManager.getLastResolutionScale()) + settingsManager.getOriginalHeight()), (int) ((coefficients[0] * settingsManager.getLastResolutionScale()) + settingsManager.getOriginalWidth())));
 
 
 
         resolutionSeekBar = findViewById(R.id.seekBarRes);
         resolutionSeekBar.setProgress(settingsManager.getLastResolutionScale());
 
-        testBar = findViewById(R.id.progressBar);
-        testBar.setProgress(resolutionSeekBar.getProgress());
+        circularProgressBar = findViewById(R.id.progressBar);
+        circularProgressBar.setProgress(resolutionSeekBar.getProgress());
         lastProgress = resolutionSeekBar.getProgress();
 
-        addGame = findViewById(R.id.addGameButton);
+        ImageButton addGame = findViewById(R.id.addGameButton);
 
 
-        gameListPopUp = new Dialog(this);
+
 
 
 
@@ -160,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
         resolutionSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                testBar.incrementProgressBy((i- lastProgress));
+                circularProgressBar.incrementProgressBy((i- lastProgress));
                 lastProgress = i;
                 FPSPercentage.setText(String.format("+%d%%", (int) (i * 0.8)));
 
@@ -194,13 +193,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void showGameListPopup(Context context, boolean onlyAddGames){
-        long test = System.currentTimeMillis();
+        final Dialog gameListPopUp = new Dialog(this);
 
         int xScreen = context.getResources().getDisplayMetrics().widthPixels;
         int yScreen = context.getResources().getDisplayMetrics().heightPixels;
 
         gameListPopUp.setContentView(R.layout.add_game_layout);
-        gameListPopUp.getWindow().setLayout((int) Math.ceil(xScreen*0.90),(int) Math.min(Math.ceil(yScreen*0.85),gameList.size()*200 ) + (onlyAddGames ? 200 : 0) );//The magic number 200 correspond to one GameApp item + one space
+        gameListPopUp.getWindow().setLayout((int) Math.ceil(xScreen*0.90),(int) Math.min(Math.ceil(yScreen*0.85),gameList.size()*200 + (onlyAddGames ? 200 : 0)) );//The magic number 200 correspond to one GameApp item + one space
 
         LinearLayout layout = (LinearLayout) gameListPopUp.findViewById(R.id.gameListLayout);
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -226,10 +225,11 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     test(packageName.getText().toString());
-                    settingsManager.addGameApp(packageName.getText().toString());
+                    //settingsManager.addGameApp(packageName.getText().toString());
 
                     gameListPopUp.dismiss();
-                    GameAppManager.launchGameApp(MainActivity.this,packageName.getText().toString());
+                    addGameUI(packageName.getText().toString());
+                    //GameAppManager.launchGameApp(MainActivity.this,packageName.getText().toString());
                 }
             });
 
@@ -260,7 +260,6 @@ public class MainActivity extends AppCompatActivity {
 
         gameListPopUp.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         gameListPopUp.show();
-        Log.d("EXEC TIME: ", "ms: " + (test + System.currentTimeMillis()));
     }
 
 
@@ -289,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void setOptionsOnClickListener(){
+    private void setOptionsOnClickListener(){
         //First the switches themselves:
         optionCheckboxes[0].setOnClickListener(new View.OnClickListener() {
             @Override
@@ -329,6 +328,10 @@ public class MainActivity extends AppCompatActivity {
         recentGameAppLogo[4] = findViewById(R.id.imageViewRecentGame5);
         recentGameAppLogo[5] = findViewById(R.id.imageViewRecentGame6);
 
+        loadRecentGamesUI();
+    }
+
+    private void loadRecentGamesUI(){
         //Now we need to load recent games
         for(int i=0; i<6; i++){
             recentGameApp[i] = settingsManager.getRecentGameApp(i+1);
@@ -353,9 +356,10 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         }
+        return;
     }
 
-    public void setRecentGameAppClickable(boolean state){
+    private void setRecentGameAppClickable(boolean state){
         for(int i = 0; i<5; i++){
             recentGameAppLogo[i].setClickable(state);
         }
@@ -395,7 +399,7 @@ public class MainActivity extends AppCompatActivity {
                 });
 
 
-        dialog = builder.create();
+        AlertDialog dialog = builder.create();
 
         dialog.show();
     }
@@ -403,6 +407,11 @@ public class MainActivity extends AppCompatActivity {
     private void showAddGame(boolean onlyAddGames){
         gameList = GameAppManager.getGameApps(MainActivity.this, onlyAddGames);
         showGameListPopup(MainActivity.this, onlyAddGames);
+    }
+
+    private void addGameUI(String packageName){
+        settingsManager.addGameApp(packageName);
+        loadRecentGamesUI();
     }
 
     @Override
