@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         if (settingsManager.isFirstLaunch()){
-            settingsManager.initializeFirstLaunch();
+            showDisclaimerPopup();
         }
 
         //Options
@@ -424,8 +424,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        GameAppManager.restoreOriginalLMK(MainActivity.this);
-                        settingsManager.setScreenDimension(settingsManager.getOriginalHeight(), settingsManager.getOriginalWidth());
+                        //Todo
 
                     }
                 })
@@ -434,8 +433,39 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         Log.d("NEGATIVE CHOICE BUTTON", "PRESSED");
                         dialog.dismiss();
+                        finish();
                     }
-                });
+                }).setCancelable(false);
+
+
+        AlertDialog dialog = builder.create();
+
+        dialog.show();
+    }
+
+    private void showDisclaimerPopup(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+        // 2. Chain together various setter methods to set the dialog characteristics
+        builder.setTitle(R.string.disclaimer_popup_title)
+                .setMessage(R.string.disclaimer_popup_text)
+                .setPositiveButton(R.string.disclaimer_popup_positive_choice, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        //The user accepted, meaning he entered the app for the first time
+                        settingsManager.initializeFirstLaunch();
+
+                    }
+                })
+                .setNegativeButton(R.string.disclaimer_popup_negative_choice, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.d("NEGATIVE CHOICE BUTTON", "PRESSED");
+                        dialog.dismiss();
+                        finish();
+                    }
+                }).setCancelable(false);
 
 
         AlertDialog dialog = builder.create();

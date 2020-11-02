@@ -181,7 +181,7 @@ public class GameAppManager {
             context.startActivity(launchIntent);//null pointer check in case package name was not found
 
             //Then I kill myself to let all the memory for the game;
-            context.finishAndRemoveTask();
+            context.finish();
 
         }
     }

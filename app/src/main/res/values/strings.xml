@@ -33,5 +33,9 @@
     <string name="no_root_popup_positive_choice">I\'ll try non-root mode</string>
     <string name="no_root_popup_negative_choice">Quit the app</string>
 
+    <string name="disclaimer_popup_title">Disclaimer</string>
+    <string name="disclaimer_popup_text">The software is provided "AS IS", without any warranty of any kind, express or implied.</string>
+    <string name="disclaimer_popup_positive_choice">I know what I\'m doing</string>
+    <string name="disclaimer_popup_negative_choice">Quit the app</string>
     
 </resources>
