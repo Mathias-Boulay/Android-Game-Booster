@@ -175,8 +175,7 @@ public class GameAppManager {
             context.startActivity(launchIntent);//null pointer check in case package name was not found
 
             //Then I kill myself to let all the memory for the game;
-            ExecuteADBCommands.execute("am force-stop " + context.getApplicationInfo().packageName, true);
-            //context.finishAndRemoveTask();
+            context.finishAndRemoveTask();
 
         }
     }
