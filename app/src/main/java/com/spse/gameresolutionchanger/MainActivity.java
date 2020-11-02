@@ -25,6 +25,7 @@ import android.widget.SeekBar;
 import android.widget.Space;
 import android.widget.TextView;
 
+import java.io.File;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -73,9 +74,16 @@ public class MainActivity extends AppCompatActivity {
         coefficients[1] = computeCoefficients(false);
 
         //Check if we are using native resolution
-        if (settingsManager.getOriginalWidth() != settingsManager.getCurrentWidth()) {
+
+        //The file created when DPI is changed
+        File tmpFile = new File(this.getApplicationInfo().dataDir + "/tmp");
+        if (tmpFile.exists()){
+            tmpFile.delete();
+        }else {
+            if (settingsManager.getOriginalWidth() != settingsManager.getCurrentWidth()) {
                 showResetPopup();
             }
+        }
 
         //Mostly linking stuff to the view
         FPSPercentage = findViewById(R.id.textViewPercentage);
