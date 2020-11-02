@@ -28,5 +28,10 @@
     <string name="reset_popup_positive_choice">Revert resolution</string>
     <string name="reset_popup_negative_choice">No, I like it</string>
 
+    <string name="no_root_popup_title">No root solution detected !</string>
+    <string name="no_root_popup_text">It seems like there is no root access.\nDo you want to use non-root mode ?</string>
+    <string name="no_root_popup_positive_choice">I\'ll try non-root mode</string>
+    <string name="no_root_popup_negative_choice">Quit the app</string>
+
     
 </resources>

@@ -194,6 +194,8 @@ public class MainActivity extends AppCompatActivity {
     void init() {
         if (ExecuteADBCommands.canRunRootCommands()){
             Log.d("ROOT TEST","Nice, we have root access !");
+        }else{
+            showNoRootPopup();
         }
         Log.d("DEVICE RAM","IS LOW ?");
 
@@ -399,6 +401,35 @@ public class MainActivity extends AppCompatActivity {
                     }
                 })
                 .setNegativeButton(R.string.reset_popup_negative_choice, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.d("NEGATIVE CHOICE BUTTON", "PRESSED");
+                        dialog.dismiss();
+                    }
+                });
+
+
+        AlertDialog dialog = builder.create();
+
+        dialog.show();
+    }
+
+    private void showNoRootPopup(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+        // 2. Chain together various setter methods to set the dialog characteristics
+        builder.setTitle(R.string.no_root_popup_title)
+                .setMessage(R.string.no_root_popup_text)
+                .setPositiveButton(R.string.no_root_popup_positive_choice, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        GameAppManager.restoreOriginalLMK(MainActivity.this);
+                        settingsManager.setScreenDimension(settingsManager.getOriginalHeight(), settingsManager.getOriginalWidth());
+
+                    }
+                })
+                .setNegativeButton(R.string.no_root_popup_negative_choice, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Log.d("NEGATIVE CHOICE BUTTON", "PRESSED");
