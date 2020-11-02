@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Game Resolution Changer</string>
+    <string name="app_name">Game res scaler</string>
 
     <string name="high_res_limit">100%</string>
     <string name="low_res_limit">50%</string>

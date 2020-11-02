@@ -4,11 +4,14 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -26,6 +29,7 @@ import android.widget.Space;
 import android.widget.TextView;
 
 import java.io.File;
+import java.security.Permission;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -197,6 +201,9 @@ public class MainActivity extends AppCompatActivity {
         }else{
             showNoRootPopup();
         }
+        int canWriteSecureSettings = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_SECURE_SETTINGS);
+        Log.d("CAN WRITE SECURE SET: ", String.valueOf(canWriteSecureSettings));
+
         Log.d("DEVICE RAM","IS LOW ?");
 
         return;
