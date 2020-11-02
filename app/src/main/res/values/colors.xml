@@ -14,7 +14,6 @@
     <color name="impureGrey">#7F7F7F</color>
 
     <color name="backgroundProgressBar">#C4C4C4</color>
-    <color name="foregroundProgressBar">#FE842E</color>
 
     <color name="backgroundGameAppListStart">#16A1A5</color>
     <color name="backgroundGameAppListEnd">#8ED9C0</color>
@@ -26,7 +25,6 @@
     <color name="recentGameTextColor">#FF1900</color>
 
     <color name="backgroundDownStart">#FA5805</color>
-    <color name="backgroundDownMiddle">#FA5805</color>
     <color name="backgroundDownEnd">#D100FF</color>
 
 </resources>

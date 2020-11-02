@@ -18,10 +18,8 @@
 
     <string name="option_title">Settings</string>
     <string name="option_aggressive_LMK">Aggressive Low Memory Killer</string>
-    <string name="option_kill_services">Kill all services (NOT RECOMMENDED)</string>
     <string name="option_kill_apps">Kill all apps (NOT RECOMMENDED)</string>
     <string name="option_keep_DPI">Keep stock DPI</string>
-    <string name="option_only_add_games">Only add games</string>
 
     <string name="reset_popup_title">Custom resolution found !</string>
     <string name="reset_popup_text">Do you want to revert back to the original resolution</string>
