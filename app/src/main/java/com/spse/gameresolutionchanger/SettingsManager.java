@@ -15,6 +15,8 @@ public class SettingsManager {
     private boolean AGGRESSIVE_LOW_MEMORY_KILLER;
     private boolean KILL_ALL_OTHER_APPS;
 
+    private boolean IS_ROOT;
+
 
     SharedPreferences preferences;
     SharedPreferences.Editor editor;
@@ -34,9 +36,18 @@ public class SettingsManager {
         displayStats[1] = point.y;
         displayStats[2] = activity.getResources().getDisplayMetrics().densityDpi;
 
-        AGGRESSIVE_LOW_MEMORY_KILLER = preferences.getBoolean("aggressiveLMK", false);
-        KILL_ALL_OTHER_APPS = preferences.getBoolean("isMurderer", false);
+        IS_ROOT = preferences.getBoolean("isRoot",ExecuteADBCommands.canRunRootCommands());
+        if(IS_ROOT) {
+            AGGRESSIVE_LOW_MEMORY_KILLER = preferences.getBoolean("aggressiveLMK", false);
+            KILL_ALL_OTHER_APPS = preferences.getBoolean("isMurderer", false);
+        }else{
+            AGGRESSIVE_LOW_MEMORY_KILLER = false;
+            KILL_ALL_OTHER_APPS = false;
+        }
+
         KEEP_STOCK_DPI = preferences.getBoolean("keepStockDPI", false);
+
+
 
     }
 
@@ -89,9 +100,15 @@ public class SettingsManager {
 
     public boolean keepStockDPI(){return KEEP_STOCK_DPI;}
 
+    public boolean isRoot(){
+        return IS_ROOT;
+    }
+
     public int getLastResolutionScale(){
         return preferences.getInt("lastResolutionScale", 0);
     }
+
+
 
 
 
@@ -135,7 +152,7 @@ public class SettingsManager {
             commands.add("wm density " + densityDPI);
         }
 
-        success = ExecuteADBCommands.execute(commands, true);
+        success = ExecuteADBCommands.execute(commands, isRoot());
         displayStats[0] = width;
         displayStats[1] = height;
         displayStats[2] = densityDPI;
@@ -191,5 +208,12 @@ public class SettingsManager {
         editor.apply();
     }
 
+    public void setRootState(boolean state){
+        IS_ROOT = state;
+
+        editor = preferences.edit();
+        editor.putBoolean("isRoot", state);
+        editor.apply();
+    }
 }
 

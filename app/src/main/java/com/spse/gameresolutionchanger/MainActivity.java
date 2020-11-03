@@ -27,6 +27,7 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.Space;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.security.Permission;
@@ -109,10 +110,13 @@ public class MainActivity extends AppCompatActivity {
 
         ImageButton addGame = findViewById(R.id.addGameButton);
 
+        init();
 
-
-
-
+        if(!settingsManager.isRoot()){
+            showNoRootPopup();
+        }else{
+            settingsManager.setRootState(true);
+        }
 
         if (settingsManager.isFirstLaunch()){
             showDisclaimerPopup();
@@ -163,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        init();
+
 
 
 
@@ -196,11 +200,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void init() {
-        if (ExecuteADBCommands.canRunRootCommands()){
-            Log.d("ROOT TEST","Nice, we have root access !");
-        }else{
-            showNoRootPopup();
-        }
         int canWriteSecureSettings = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_SECURE_SETTINGS);
         Log.d("CAN WRITE SECURE SET: ", String.valueOf(canWriteSecureSettings));
 
@@ -299,27 +298,46 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void setOptionsClickable(boolean state){
-        for(int i = 0; i< optionCheckboxes.length; i++){
+    public void setOptionsClickable(boolean state) {
+        for (int i = 0; i < optionCheckboxes.length; i++) {
             optionCheckboxes[i].setClickable(state);
         }
+        return;
     }
 
     private void setOptionsOnClickListener(){
-        //First the switches themselves:
-        optionCheckboxes[0].setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                settingsManager.setLMK(optionCheckboxes[0].isChecked());
-            }
-        });
+        //If you have a non-rooted device, use the non rooted behavior instead
+        if(settingsManager.isRoot()) {
+            optionCheckboxes[0].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    settingsManager.setLMK(optionCheckboxes[0].isChecked());
+                }
+            });
 
-        optionCheckboxes[1].setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                settingsManager.setMurderer(optionCheckboxes[1].isChecked());
-            }
-        });
+            optionCheckboxes[1].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    settingsManager.setMurderer(optionCheckboxes[1].isChecked());
+                }
+            });
+        }else{
+            optionCheckboxes[0].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    optionCheckboxes[0].setChecked(false);
+                    Toast.makeText(MainActivity.this, getString(R.string.no_permission_toast), Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            optionCheckboxes[1].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    optionCheckboxes[1].setChecked(false);
+                    Toast.makeText(MainActivity.this, getString(R.string.no_permission_toast), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
 
         optionCheckboxes[2].setOnClickListener(new View.OnClickListener() {
             @Override
@@ -431,7 +449,14 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        //Todo
+                        int canWriteSecureSettings = ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_SECURE_SETTINGS);
+                        if(canWriteSecureSettings == PackageManager.PERMISSION_DENIED){
+                            showNoPermissionsPopup();
+                        }else{
+                            //The no-root method is ready, so we register it in the settings;
+                            settingsManager.setRootState(false);
+                        }
+
 
                     }
                 })
@@ -443,6 +468,35 @@ public class MainActivity extends AppCompatActivity {
                         finish();
                     }
                 }).setCancelable(false);
+
+
+        AlertDialog dialog = builder.create();
+
+        dialog.show();
+    }
+
+    private void showNoPermissionsPopup(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+        // 2. Chain together various setter methods to set the dialog characteristics
+        builder.setTitle(R.string.no_permission_popup_title)
+                .setMessage(R.string.no_permission_popup_text)
+                .setPositiveButton(R.string.no_permission_popup_positive_choice, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        //todo send the user to the setup page (github)
+
+                    }
+                })
+                .setNegativeButton(R.string.no_permission_popup_negative_choice, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.d("NEGATIVE CHOICE BUTTON", "PRESSED");
+                        dialog.dismiss();
+                        finish();
+                    }
+                });
 
 
         AlertDialog dialog = builder.create();

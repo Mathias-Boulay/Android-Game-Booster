@@ -157,7 +157,7 @@ public class GameAppManager {
         //Changing the DPI causes the activity layout to restart from scratch, so we have to let a trace informing that we are just changing stuff, not relaunching the app:
 
         if(!st.keepStockDPI()) {
-            ExecuteADBCommands.execute("echo '' > " + context.getApplicationInfo().dataDir + "/tmp", true);
+            ExecuteADBCommands.execute("echo '' > " + context.getApplicationInfo().dataDir + "/tmp", st.isRoot());
         }
 
         st.setScreenDimension(

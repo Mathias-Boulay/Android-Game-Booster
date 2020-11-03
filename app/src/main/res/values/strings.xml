@@ -35,5 +35,12 @@
     <string name="disclaimer_popup_text">The software is provided "AS IS", without any warranty of any kind, express or implied.</string>
     <string name="disclaimer_popup_positive_choice">I know what I\'m doing</string>
     <string name="disclaimer_popup_negative_choice">Quit the app</string>
+
+    <string name="no_permission_popup_title">No permission</string>
+    <string name="no_permission_popup_text">The non-root mode requires the WRITE_SECURE_SETTINGS permission, which can be given through an ADB command.\nClick the learn more button to explain how to.</string>
+    <string name="no_permission_popup_positive_choice">Learn more</string>
+    <string name="no_permission_popup_negative_choice">Quit the app</string>
+
+    <string name="no_permission_toast">Can\'t use this option in non-root mode !</string>
     
 </resources>
