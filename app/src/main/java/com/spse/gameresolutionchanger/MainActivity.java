@@ -1,5 +1,6 @@
 package com.spse.gameresolutionchanger;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -14,6 +15,7 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.transition.TransitionManager;
 import android.util.Log;
@@ -59,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
     GameApp[] recentGameApp = new GameApp[6];
     TextView[] recentGameAppTitle = new TextView[6];
     ImageButton[] recentGameAppLogo = new ImageButton[6];
+
+
 
 
 
@@ -199,11 +203,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     void init() {
         int canWriteSecureSettings = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_SECURE_SETTINGS);
         Log.d("CAN WRITE SECURE SET: ", String.valueOf(canWriteSecureSettings));
 
         Log.d("DEVICE RAM","IS LOW ?");
+
+        if(Build.VERSION.SDK_INT == Build.VERSION_CODES.R ) {
+            int canQueryPackages = ContextCompat.checkSelfPermission(this, Manifest.permission.QUERY_ALL_PACKAGES);
+            Log.d("QUERY PACKAGES", String.valueOf(canQueryPackages));
+            if(canQueryPackages == -1 /*Permission denied*/ ){
+                Toast.makeText(this,"No permission",Toast.LENGTH_LONG).show();
+            }
+        }
 
         return;
     }
