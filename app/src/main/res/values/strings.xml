@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Game res scaler</string>
+    <string name="app_name">GRS</string>
 
     <string name="high_res_limit">100%</string>
     <string name="low_res_limit">50%</string>
@@ -42,5 +42,7 @@
     <string name="no_permission_popup_negative_choice">Quit the app</string>
 
     <string name="no_permission_toast">Can\'t use this option in non-root mode !</string>
+
+    <string name="link_to_setup">https://github.com/serpentspirale/Android-Game-Booster#Setup</string>
     
 </resources>
