@@ -1,0 +1,4 @@
+adb devices
+adb devices
+
+adb shell pm grant com.spse.gameresolutionchanger android.permission.WRITE_SECURE_SETTINGS
