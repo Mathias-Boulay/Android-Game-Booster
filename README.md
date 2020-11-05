@@ -1,3 +1,6 @@
+<p align="center">
+<a href="https://imgbb.com/"><img src="https://i.ibb.co/L1pNz83/roundsplashscreenicon-1-1-1-1-1-1.png" alt="roundsplashscreenicon-1-1-1-1-1-1" border="0"></a></p>
+
 
 # Game Resolution Scaler (GRS)
 The Game Resolution scaler is a unified implementation for custom resolutions on Android, compatible from android 5.0 (*lollipop*) all the way up to android 11, compatible with both rooted **and** rootless devices !
