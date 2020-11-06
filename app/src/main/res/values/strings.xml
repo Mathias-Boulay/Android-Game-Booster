@@ -12,6 +12,7 @@
 
     <string name="resolution">Native:</string>
     <string name="resolution_tweaked">Tweaked:</string>
+    <string name="progressive">p</string>
 
     <string name="recent_games">Recently added games:</string>
     <string name="empty_recent_game"> </string>

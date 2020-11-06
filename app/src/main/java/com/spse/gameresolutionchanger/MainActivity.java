@@ -101,9 +101,9 @@ public class MainActivity extends AppCompatActivity {
         FPSPercentage.setText(String.format("+%d%%", (int) (settingsManager.getLastResolutionScale() * 0.8)));
 
         TextView nativeResolution = findViewById(R.id.textViewNativeResolution);
-        nativeResolution.setText(String.format("%s\n%dx%d", getString(R.string.resolution), settingsManager.getOriginalHeight(), settingsManager.getOriginalWidth()));
+        nativeResolution.setText(String.format("%s\n%dx%d%s", getString(R.string.resolution), settingsManager.getOriginalHeight(), settingsManager.getOriginalWidth(), getString(R.string.progressive)));
         tweakedResolution = findViewById(R.id.textViewTweakedResolution);
-        tweakedResolution.setText(String.format("%s\n%dx%d", getString(R.string.resolution_tweaked),(int) ((coefficients[1] * settingsManager.getLastResolutionScale()) + settingsManager.getOriginalHeight()), (int) ((coefficients[0] * settingsManager.getLastResolutionScale()) + settingsManager.getOriginalWidth())));
+        tweakedResolution.setText(String.format("%s\n%dx%d%s", getString(R.string.resolution_tweaked),(int) ((coefficients[1] * settingsManager.getLastResolutionScale()) + settingsManager.getOriginalHeight()), (int) ((coefficients[0] * settingsManager.getLastResolutionScale()) + settingsManager.getOriginalWidth()) , getString(R.string.progressive)));
 
 
 
@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
                 lastProgress = i;
                 FPSPercentage.setText(String.format("+%d%%", (int) (i * 0.8)));
 
-                tweakedResolution.setText(String.format("%s\n%dx%d", getString(R.string.resolution_tweaked),(int) (Math.ceil(coefficients[1] * i) + settingsManager.getOriginalHeight()), (int) (Math.ceil(coefficients[0] * i) + settingsManager.getOriginalWidth())));
+                tweakedResolution.setText(String.format("%s\n%dx%d%s", getString(R.string.resolution_tweaked),(int) (Math.ceil(coefficients[1] * i) + settingsManager.getOriginalHeight()), (int) (Math.ceil(coefficients[0] * i) + settingsManager.getOriginalWidth()), getString(R.string.progressive)));
             }
 
             @Override
