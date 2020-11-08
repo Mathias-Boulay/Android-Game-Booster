@@ -162,19 +162,25 @@ public class SettingsManager {
     }
 
 
-    public void addGameApp(String packageName){
+    public void addGameApp(String packageName, int index){
         editor = preferences.edit();
-
-        editor.putString("6thGame", preferences.getString("5thGame", ""));
-        editor.putString("5thGame", preferences.getString("4thGame", ""));
-        editor.putString("4thGame", preferences.getString("3thGame", ""));
-        editor.putString("3thGame", preferences.getString("2thGame", ""));
-        editor.putString("2thGame", preferences.getString("1thGame", ""));
-
-        //Then the last added game
-        editor.putString("1thGame", packageName);
-
+        editor.putString((index+1)+"thGame", packageName);
         editor.apply();
+    }
+
+    public void removeGameApp(int index){
+        editor = preferences.edit();
+        editor.putString((index+1)+"thGame", "");
+        editor.apply();
+    }
+
+    public int findFirstEmptyRecentGameApp(){
+        for(int i=1; i<=6;i++){
+            if(getRecentGameApp(i) == null){
+                return (i-1);
+            }
+        }
+        return 0;
     }
 
     public void setLMK(boolean state){

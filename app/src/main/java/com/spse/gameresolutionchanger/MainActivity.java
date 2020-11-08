@@ -188,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
         addGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showAddGame(true);
+                showAddGame(true, settingsManager.findFirstEmptyRecentGameApp());
             }
         });
 
@@ -213,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
         return;
     }
 
-    void showGameListPopup(Context context, boolean onlyAddGames){
+    void showGameListPopup(Context context, boolean onlyAddGames, final int gameAppIndex){
         final Dialog gameListPopUp = new Dialog(this);
 
         int xScreen = context.getResources().getDisplayMetrics().widthPixels;
@@ -249,7 +249,7 @@ public class MainActivity extends AppCompatActivity {
                     //settingsManager.addGameApp(packageName.getText().toString());
 
                     gameListPopUp.dismiss();
-                    addGameUI(packageName.getText().toString());
+                    addGameUI(packageName.getText().toString(), gameAppIndex);
                     //GameAppManager.launchGameApp(MainActivity.this,packageName.getText().toString());
                 }
             });
@@ -270,14 +270,11 @@ public class MainActivity extends AppCompatActivity {
 
                     gameListPopUp.dismiss();
                     gameList = GameAppManager.getGameApps(MainActivity.this, false);
-                    showGameListPopup(MainActivity.this, false);
+                    showGameListPopup(MainActivity.this, false, gameAppIndex);
 
                 }
             });
         }
-
-
-
 
         gameListPopUp.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         gameListPopUp.show();
@@ -375,23 +372,36 @@ public class MainActivity extends AppCompatActivity {
         //Now we need to load recent games
         for(int i=0; i<6; i++){
             recentGameApp[i] = settingsManager.getRecentGameApp(i+1);
+            final int finalI = i;
             if(recentGameApp[i] != null) {
                 recentGameAppTitle[i].setText(recentGameApp[i].getGameName());
                 recentGameAppLogo[i].setImageDrawable(recentGameApp[i].getIcon());
 
-                final int finalI = i;
+
                 recentGameAppLogo[i].setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         GameAppManager.launchGameApp(MainActivity.this, recentGameApp[finalI].getPackageName());
                     }
                 });
+                recentGameAppLogo[i].setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        //The long click is used to delete an app
+                        //Todo create a complete sub menu
+                        showRemoveGamePopup(MainActivity.this, finalI);
+                        return false;
+                    }
+                });
             }else{
                 //No game yet, let's add a game
+                recentGameAppTitle[i].setText(R.string.empty_recent_game);
+                recentGameAppLogo[i].setImageDrawable(ContextCompat.getDrawable(MainActivity.this, R.drawable.empty_recent_game));
+
                 recentGameAppLogo[i].setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        showAddGame(true);
+                        showAddGame(true, finalI);
                     }
                 });
             }
@@ -545,13 +555,79 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void showAddGame(boolean onlyAddGames){
-        gameList = GameAppManager.getGameApps(MainActivity.this, onlyAddGames);
-        showGameListPopup(MainActivity.this, onlyAddGames);
+    void showRemoveGamePopup(Context context, final int gameAppIndex){
+        final Dialog gameListPopUp = new Dialog(this);
+
+        final int xScreen = context.getResources().getDisplayMetrics().widthPixels;
+        final int yScreen = context.getResources().getDisplayMetrics().heightPixels;
+
+        gameListPopUp.setContentView(R.layout.add_game_layout);
+        gameListPopUp.getWindow().setLayout((int) Math.ceil(xScreen*0.90),(int) Math.min(Math.ceil(yScreen*0.85), 204*2 /*204 x number of items*/) );//The magic number 200 correspond to one GameApp item + one space
+
+        LinearLayout layout = (LinearLayout) gameListPopUp.findViewById(R.id.gameListLayout);
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+
+
+
+        //First the GameApp to show details
+        View child = inflater.inflate(R.layout.game_app_item, null);
+        TextView title = child.findViewById(R.id.textViewGameAppTitle);
+        TextView packageName = child.findViewById(R.id.textViewGameAppPackageName);
+        ImageView icon = child.findViewById(R.id.imageViewGameIcon);
+
+        GameApp game = settingsManager.getRecentGameApp(gameAppIndex+1);
+
+        title.setText(game.getGameName());
+        packageName.setText(game.getPackageName());
+        icon.setImageDrawable(game.getIcon());
+
+        layout.addView(child);
+
+
+        //Then a space
+        child = new Space(this);
+        child.setMinimumHeight(10);
+
+        layout.addView(child);
+
+        //Then the remove from list button
+        child = inflater.inflate(R.layout.detail_item, null);
+        title = child.findViewById(R.id.textViewGameAppTitle);
+        packageName = child.findViewById(R.id.textViewGameAppPackageName);
+
+        title.setText(getString(R.string.remove_popup_title));
+        packageName.setText(getString(R.string.remove_popup_text));
+
+        layout.addView(child);
+
+        child.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                removeGameUI(gameAppIndex);
+                gameListPopUp.dismiss();
+            }
+        });
+
+
+
+
+
+        gameListPopUp.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        gameListPopUp.show();
     }
 
-    private void addGameUI(String packageName){
-        settingsManager.addGameApp(packageName);
+    private void showAddGame(boolean onlyAddGames, int gameAppIndex){
+        gameList = GameAppManager.getGameApps(MainActivity.this, onlyAddGames);
+        showGameListPopup(MainActivity.this, onlyAddGames, gameAppIndex);
+    }
+
+    private void addGameUI(String packageName, int index){
+        settingsManager.addGameApp(packageName, index);
+        loadRecentGamesUI();
+    }
+
+    private void removeGameUI(int index){
+        settingsManager.removeGameApp(index);
         loadRecentGamesUI();
     }
 

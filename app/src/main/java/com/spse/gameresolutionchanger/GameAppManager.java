@@ -53,7 +53,7 @@ public class GameAppManager {
 
             ApplicationInfo app = PM.getApplicationInfo(packageName, 0);
             WrappedDrawable wrappedIcon = new WrappedDrawable(PM.getApplicationIcon(app));
-            wrappedIcon.setBounds(0,0,65,65);
+            wrappedIcon.setBounds(0,0,180,180);
             String name = PM.getApplicationLabel(app).toString();
 
             return new GameApp(name,wrappedIcon,packageName);
