@@ -101,16 +101,8 @@ public class ExecuteADBCommands extends MainActivity
                 try
                 {
                     int processRetval = process.waitFor();
-                    if (255 != processRetval)
-                    {
-                        // Root access granted
-                        retval = true;
-                    }
-                    else
-                    {
-                        // Root access denied
-                        retval = false;
-                    }
+                    // Root access granted/denied
+                    retval = 255 != processRetval;
                 }
                 catch (Exception ex)
                 {
