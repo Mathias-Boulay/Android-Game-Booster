@@ -37,8 +37,7 @@ public class GameAppManager {
             String appName = info.applicationInfo.loadLabel(gamePM).toString();
             String packages = info.applicationInfo.packageName;
 
-            WrappedDrawable wrappedIcon = new WrappedDrawable(info.applicationInfo.loadIcon(gamePM));
-            wrappedIcon.setBounds(0,0,160,160);
+            WrappedDrawable wrappedIcon = new WrappedDrawable(info.applicationInfo.loadIcon(gamePM),0,0,160,160);
 
             gameAppList.add(new GameApp(appName, wrappedIcon, packages));
 
@@ -52,8 +51,7 @@ public class GameAppManager {
         try {
 
             ApplicationInfo app = PM.getApplicationInfo(packageName, 0);
-            WrappedDrawable wrappedIcon = new WrappedDrawable(PM.getApplicationIcon(app));
-            wrappedIcon.setBounds(0,0,180,180);
+            WrappedDrawable wrappedIcon = new WrappedDrawable(PM.getApplicationIcon(app), 0,0,180,180);
             String name = PM.getApplicationLabel(app).toString();
 
             return new GameApp(name,wrappedIcon,packageName);

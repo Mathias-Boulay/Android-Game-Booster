@@ -17,6 +17,12 @@ public class WrappedDrawable extends Drawable {
         _drawable = drawable;
     }
 
+    public WrappedDrawable(Drawable drawable, int left, int top, int right, int bottom) {
+        super();
+        _drawable = drawable;
+        setBounds(left, top, right, bottom);
+    }
+
     @Override
     public void setBounds(int left, int top, int right, int bottom) {
         //update bounds to get correctly
