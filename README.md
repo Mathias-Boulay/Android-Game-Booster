@@ -76,6 +76,7 @@ You can just clone the repo and get started !
 
  - Improve the UI smoothness by caching.
  - Improve performance with multi-threading the getGameApps and showAddPopup functions.
+ - Add per-game custom resolution to override global custom resolution.
  - Add compatibility to android 4.4 ? Are modern games compatible with a 7 years old version ?
 
 
