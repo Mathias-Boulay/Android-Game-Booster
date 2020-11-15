@@ -109,6 +109,8 @@
         android:text="+0%"
         android:textColor="@color/textTop"
         android:textSize="46sp"
+        android:outlineProvider="none"
+
         app:layout_constraintBottom_toBottomOf="@+id/progressBar"
         app:layout_constraintEnd_toEndOf="@+id/progressBar"
         app:layout_constraintHorizontal_bias="0.5"
@@ -161,6 +163,8 @@
         android:text="@string/FPS"
         android:textColor="@color/textTop"
         android:textSize="22sp"
+        android:outlineProvider="none"
+
         app:layout_constraintBottom_toBottomOf="@+id/progressBar"
         app:layout_constraintEnd_toEndOf="@+id/progressBar"
         app:layout_constraintHorizontal_bias="0.5"
@@ -408,6 +412,7 @@
         android:layout_height="80dp"
         android:background="@drawable/transparent_rounded_square"
         android:elevation="5dp"
+        android:outlineProvider="none"
         android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="@+id/viewDownBackground"
         app:layout_constraintStart_toStartOf="@+id/viewDownBackground"
@@ -425,6 +430,8 @@
         android:textAlignment="center"
         android:textColor="@color/pureWhite"
         android:textSize="18sp"
+        android:outlineProvider="none"
+
         app:layout_constraintBottom_toTopOf="@+id/guideline"
         app:layout_constraintEnd_toStartOf="@+id/progressBar"
         app:layout_constraintHorizontal_bias="0.5"
@@ -441,6 +448,7 @@
         android:textColor="@color/pureWhite"
         android:textSize="18sp"
         android:textAlignment="center"
+        android:outlineProvider="none"
 
         app:layout_constraintBottom_toTopOf="@+id/guideline"
         app:layout_constraintEnd_toEndOf="parent"
@@ -454,6 +462,7 @@
         android:layout_height="wrap_content"
         android:alpha="100"
         android:elevation="5dp"
+        android:outlineProvider="none"
         android:fontFamily="@font/nunito_bold"
         android:text="@string/option_title"
         android:textColor="@color/pureWhite"

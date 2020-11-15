@@ -3,15 +3,18 @@ package com.spse.gameresolutionchanger;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,7 +35,11 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.ContextCompat;
 
+import com.spse.gameresolutionchanger.failsafe.FailsafeBroadcastReceiver;
+
 import java.io.File;
+import java.io.IOException;
+import java.nio.channels.ShutdownChannelGroupException;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -206,6 +213,21 @@ public class MainActivity extends AppCompatActivity {
             if(canQueryPackages == -1 /*Permission denied*/ ){
                 Toast.makeText(this,"No permission",Toast.LENGTH_LONG).show();
             }
+        }
+
+        try {
+            Process process = Runtime.getRuntime().exec("wm density 220");
+            process.waitFor();
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
+        //Test for the broadcast receiver for android O+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            FailsafeBroadcastReceiver failSafe = new FailsafeBroadcastReceiver();
+            IntentFilter filter = new IntentFilter(Intent.ACTION_SHUTDOWN);
+            registerReceiver(failSafe, filter);
         }
 
         return;

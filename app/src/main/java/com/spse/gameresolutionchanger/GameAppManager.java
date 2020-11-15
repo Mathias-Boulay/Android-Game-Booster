@@ -1,20 +1,12 @@
 package com.spse.gameresolutionchanger;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.ScaleDrawable;
 import android.os.Build;
-import android.provider.Settings;
-import android.util.Log;
-import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -162,6 +154,7 @@ public class GameAppManager {
                 (int)(Math.ceil(context.coefficients[1]*resolutionScale) + st.getOriginalHeight()),
                 (int)(Math.ceil(context.coefficients[0]*resolutionScale) + st.getOriginalWidth())
         );
+
 
         if(st.isMurderer()){
             murderApps(context);
