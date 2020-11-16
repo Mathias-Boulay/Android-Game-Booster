@@ -36,8 +36,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.ContextCompat;
 
-import com.spse.gameresolutionchanger.failsafe.FailsafeBroadcastReceiver;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -219,13 +217,6 @@ public class MainActivity extends AppCompatActivity {
             if(canQueryPackages == PackageManager.PERMISSION_DENIED ){
                 Toast.makeText(this,"No permission",Toast.LENGTH_LONG).show();
             }
-        }
-
-        //Test for the broadcast receiver for android O+
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            FailsafeBroadcastReceiver failSafe = new FailsafeBroadcastReceiver();
-            IntentFilter filter = new IntentFilter(Intent.ACTION_SHUTDOWN);
-            registerReceiver(failSafe, filter);
         }
 
 
