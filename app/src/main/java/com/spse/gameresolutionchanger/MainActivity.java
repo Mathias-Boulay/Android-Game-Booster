@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.pm.PermissionInfo;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -37,9 +38,12 @@ import androidx.core.content.ContextCompat;
 
 import com.spse.gameresolutionchanger.failsafe.FailsafeBroadcastReceiver;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.channels.ShutdownChannelGroupException;
+import java.security.Permission;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -124,7 +128,9 @@ public class MainActivity extends AppCompatActivity {
         init();
 
         if(!settingsManager.isRoot()){
-            showNoRootPopup();
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_DENIED){
+                showNoRootPopup();
+            }
         }else{
             settingsManager.setRootState(true);
         }
@@ -210,18 +216,10 @@ public class MainActivity extends AppCompatActivity {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ) {
             int canQueryPackages = ContextCompat.checkSelfPermission(this, Manifest.permission.QUERY_ALL_PACKAGES);
             Log.d("QUERY PACKAGES", String.valueOf(canQueryPackages));
-            if(canQueryPackages == -1 /*Permission denied*/ ){
+            if(canQueryPackages == PackageManager.PERMISSION_DENIED ){
                 Toast.makeText(this,"No permission",Toast.LENGTH_LONG).show();
             }
         }
-
-        try {
-            Process process = Runtime.getRuntime().exec("wm density 220");
-            process.waitFor();
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-        }
-
 
         //Test for the broadcast receiver for android O+
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -229,6 +227,8 @@ public class MainActivity extends AppCompatActivity {
             IntentFilter filter = new IntentFilter(Intent.ACTION_SHUTDOWN);
             registerReceiver(failSafe, filter);
         }
+
+
 
         return;
     }
@@ -343,6 +343,13 @@ public class MainActivity extends AppCompatActivity {
                     settingsManager.setMurderer(optionCheckboxes[1].isChecked());
                 }
             });
+
+            optionCheckboxes[2].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    settingsManager.setKeepStockDPI(optionCheckboxes[2].isChecked());
+                }
+            });
         }else{
             optionCheckboxes[0].setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -359,14 +366,17 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, getString(R.string.no_permission_toast), Toast.LENGTH_SHORT).show();
                 }
             });
+
+            optionCheckboxes[2].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    optionCheckboxes[2].setChecked(true);
+                    Toast.makeText(MainActivity.this, getString(R.string.no_permission_toast), Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
-        optionCheckboxes[2].setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                settingsManager.setKeepStockDPI(optionCheckboxes[2].isChecked());
-            }
-        });
+
     }
 
     private void initializeRecentGames(){

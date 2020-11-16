@@ -83,6 +83,16 @@ public class ExecuteADBCommands extends MainActivity
         {
             if (null != commands && commands.size() > 0)
             {
+
+                if(!isSuperUser){
+                    //Non super user commands will exit automatically
+                    for(int i=0; i<commands.size(); i++){
+                        Process process = Runtime.getRuntime().exec(commands.get(i));
+                        process.waitFor();
+                    }
+                    return retval;
+                }
+
                 Process process = Runtime.getRuntime().exec(isSuperUser ? "su" : "");
 
                 DataOutputStream os = new DataOutputStream(process.getOutputStream());

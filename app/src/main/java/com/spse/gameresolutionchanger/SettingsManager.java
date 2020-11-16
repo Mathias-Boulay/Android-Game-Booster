@@ -36,16 +36,18 @@ public class SettingsManager {
         displayStats[1] = point.y;
         displayStats[2] = activity.getResources().getDisplayMetrics().densityDpi;
 
-        IS_ROOT = preferences.getBoolean("isRoot",ExecuteADBCommands.canRunRootCommands());
+        IS_ROOT = ExecuteADBCommands.canRunRootCommands();
         if(IS_ROOT) {
             AGGRESSIVE_LOW_MEMORY_KILLER = preferences.getBoolean("aggressiveLMK", false);
             KILL_ALL_OTHER_APPS = preferences.getBoolean("isMurderer", false);
+            KEEP_STOCK_DPI = preferences.getBoolean("keepStockDPI", false);
         }else{
             AGGRESSIVE_LOW_MEMORY_KILLER = false;
             KILL_ALL_OTHER_APPS = false;
+            KEEP_STOCK_DPI = true; //Cannot be changed on non rooted devices
         }
 
-        KEEP_STOCK_DPI = preferences.getBoolean("keepStockDPI", false);
+
 
 
 
@@ -136,20 +138,22 @@ public class SettingsManager {
     public boolean setScreenDimension(int height, int width){
         boolean success;
         int densityDPI;
-        if(!KEEP_STOCK_DPI){
-            densityDPI = (int)(getOriginalDensity() * ((float)width/(float)getOriginalWidth()));
-        }else{
-            densityDPI = getOriginalDensity();
-        }
+        ArrayList<String> commands = new ArrayList<>(1);
 
-        Log.d("DensityDPI: ","nb: " + densityDPI);
-        ArrayList<String> commands = new ArrayList<>(2);
-        if (height < getCurrentHeight()){ //Scale Down
-            commands.add("wm density " + densityDPI);
+        if(!IS_ROOT){
+            //you can't set the DPI without root, because you can't give permissions for such a thing
+            densityDPI = getOriginalDensity();
             commands.add("wm size " + width +"x"+ height);
-        }else{ //Scale up, shouldn't occur.
-            commands.add("wm size " + width +"x"+ height);
-            commands.add("wm density " + densityDPI);
+        }else{
+            densityDPI = (KEEP_STOCK_DPI ? getOriginalDensity() : ((int)(getOriginalDensity() * ((float)width/(float)getOriginalWidth()))) );
+
+            if (height < getCurrentHeight()){ //Scale Down
+                commands.add("wm density " + densityDPI);
+                commands.add("wm size " + width +"x"+ height);
+            }else{ //Scale up, shouldn't occur aside from resetting the resolution.
+                commands.add("wm size " + width +"x"+ height);
+                commands.add("wm density " + densityDPI);
+            }
         }
 
         success = ExecuteADBCommands.execute(commands, isRoot());
