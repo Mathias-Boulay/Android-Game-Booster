@@ -3,26 +3,19 @@ package com.spse.gameresolutionchanger;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.transition.TransitionManager;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
-import android.widget.Space;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,17 +24,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.spse.gameresolutionchanger.recyclerview.ViewAdapter;
 
 import java.io.File;
-import java.util.List;
-
 public class MainActivity extends AppCompatActivity {
+
+
     //Options variables
     TextView FPSPercentage;
     TextView tweakedResolution;
     SeekBar resolutionSeekBar;
     float[] coefficients = new float[2]; //Width, Height
-
 
     ProgressBar circularProgressBar;
     int lastProgress = 0; //This is used to set the progress before API 24
@@ -54,16 +50,10 @@ public class MainActivity extends AppCompatActivity {
     ConstraintSet layoutSettingsHidden = new ConstraintSet();
     ConstraintSet layoutSettingShown = new ConstraintSet();
 
-    //Dialog gameListPopUp;
-    List<GameApp> gameList;
-
     //Recently added games
     GameApp[] recentGameApp = new GameApp[6];
     TextView[] recentGameAppTitle = new TextView[6];
     ImageButton[] recentGameAppLogo = new ImageButton[6];
-
-
-
 
 
 
@@ -137,35 +127,30 @@ public class MainActivity extends AppCompatActivity {
         //Make them uncheckable since there are hidden
         setOptionsClickable(false);
 
-
         //Recent GameApps
         initializeRecentGames();
-
 
 
         layoutSettingsHidden.clone((ConstraintLayout) findViewById(R.id.MainActivity));
         layoutSettingShown.clone(this, R.layout.activity_main_options_shown);
 
         settingsSwitch = findViewById(R.id.imageButtonSettingSwitch);
-        settingsSwitch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                TransitionManager.beginDelayedTransition((ConstraintLayout) findViewById(R.id.MainActivity));
-                ConstraintSet constrain;
-                if(settingsShown){
-                    constrain = layoutSettingsHidden;
-                    setRecentGameAppClickable(true);
-                    setOptionsClickable(false);
-                }else{
-                    constrain = layoutSettingShown;
-                    setRecentGameAppClickable(false);
-                    setOptionsClickable(true);
-                }
-
-                constrain.applyTo((ConstraintLayout) findViewById(R.id.MainActivity));
-                settingsShown = !settingsShown;
-
+        settingsSwitch.setOnClickListener(view -> {
+            TransitionManager.beginDelayedTransition((ConstraintLayout) findViewById(R.id.MainActivity));
+            ConstraintSet constrain;
+            if(settingsShown){
+                constrain = layoutSettingsHidden;
+                setRecentGameAppClickable(true);
+                setOptionsClickable(false);
+            }else{
+                constrain = layoutSettingShown;
+                setRecentGameAppClickable(false);
+                setOptionsClickable(true);
             }
+
+            constrain.applyTo((ConstraintLayout) findViewById(R.id.MainActivity));
+            settingsShown = !settingsShown;
+
         });
 
         resolutionSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -175,24 +160,20 @@ public class MainActivity extends AppCompatActivity {
                 lastProgress = i;
                 FPSPercentage.setText(String.format("+%d%%", (int) (i * 0.8)));
 
-                tweakedResolution.setText(String.format("%s\n%dx%d%s", getString(R.string.resolution_tweaked),(int) (Math.ceil(coefficients[1] * i) + settingsManager.getOriginalHeight()), (int) (Math.ceil(coefficients[0] * i) + settingsManager.getOriginalWidth()), getString(R.string.progressive)));
+                tweakedResolution.setText(String.format("%s\n%dx%d%s",
+                        getString(R.string.resolution_tweaked),
+                        (int) (Math.ceil(coefficients[1] * i) + settingsManager.getOriginalHeight()),
+                        (int) (Math.ceil(coefficients[0] * i) + settingsManager.getOriginalWidth()),
+                        getString(R.string.progressive)));
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {}
-
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
-        addGame.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showAddGame(true, settingsManager.findFirstEmptyRecentGameApp());
-            }
-        });
-
-
+        addGame.setOnClickListener(view -> showAddGame(true, settingsManager.findFirstEmptyRecentGameApp()));
     }
 
 
@@ -209,82 +190,24 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this,"No permission",Toast.LENGTH_LONG).show();
             }
         }
-
-
-
-        return;
     }
 
-    void showGameListPopup(Context context, boolean onlyAddGames, final int gameAppIndex){
+
+    public void showGameList(boolean onlyAddGames, int position){
         final Dialog gameListPopUp = new Dialog(this);
-
-        int xScreen = context.getResources().getDisplayMetrics().widthPixels;
-        int yScreen = context.getResources().getDisplayMetrics().heightPixels;
-
         gameListPopUp.setContentView(R.layout.add_game_layout);
-        gameListPopUp.getWindow().setLayout((int) Math.ceil(xScreen*0.90),(int) Math.min(Math.ceil(yScreen*0.85),gameList.size()*200 + (onlyAddGames ? 200 : 0)) );//The magic number 200 correspond to one GameApp item + one space
 
-        LinearLayout layout = (LinearLayout) gameListPopUp.findViewById(R.id.gameListLayout);
-        LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+        RecyclerView recyclerView = gameListPopUp.findViewById(R.id.recyclerViewList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        recyclerView.setAdapter(new ViewAdapter(GameAppManager.getPackages(this, onlyAddGames), this, gameListPopUp, position));
 
-
-        for(int i = 0; i < gameList.size(); i++ ){
-
-            View child = inflater.inflate(R.layout.game_app_item, null);
-            TextView title = child.findViewById(R.id.textViewGameAppTitle);
-            final TextView packageName = child.findViewById(R.id.textViewGameAppPackageName);
-            ImageView icon = child.findViewById(R.id.imageViewGameIcon);
-
-            GameApp game = gameList.get(i);
-
-            title.setText(game.getGameName());
-            packageName.setText(game.getPackageName());
-            icon.setImageDrawable(game.getIcon());
+        gameListPopUp.findViewById(R.id.textViewDontFindGame).setOnClickListener(v -> {
+            gameListPopUp.dismiss();
+            showAddGame(false, position);
+        });
 
 
-            layout.addView(child);
-
-            child.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    test(packageName.getText().toString());
-                    //settingsManager.addGameApp(packageName.getText().toString());
-
-                    gameListPopUp.dismiss();
-                    addGameUI(packageName.getText().toString(), gameAppIndex);
-                    //GameAppManager.launchGameApp(MainActivity.this,packageName.getText().toString());
-                }
-            });
-
-            child = new Space(this);
-            child.setMinimumHeight(10);
-
-            layout.addView(child);
-
-
-        }
-        if(onlyAddGames){
-            View lastChild = inflater.inflate(R.layout.no_game_app_item, null);
-            layout.addView(lastChild);
-            lastChild.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    gameListPopUp.dismiss();
-                    gameList = GameAppManager.getGameApps(MainActivity.this, false);
-                    showGameListPopup(MainActivity.this, false, gameAppIndex);
-
-                }
-            });
-        }
-
-        gameListPopUp.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         gameListPopUp.show();
-    }
-
-
-    public void test(String str){
-        Log.d("PackageName: ", str);
     }
 
 
@@ -298,64 +221,26 @@ public class MainActivity extends AppCompatActivity {
         optionCheckboxes[0].setChecked(settingsManager.isLMKActivated());
         optionCheckboxes[1].setChecked(settingsManager.isMurderer());
         optionCheckboxes[2].setChecked(settingsManager.keepStockDPI());
-
-
     }
 
     public void setOptionsClickable(boolean state) {
-        for (int i = 0; i < optionCheckboxes.length; i++) {
-            optionCheckboxes[i].setClickable(state);
+        for (CheckBox optionCheckbox : optionCheckboxes) {
+            optionCheckbox.setClickable(state);
         }
-        return;
     }
 
     private void setOptionsOnClickListener(){
         //If you have a non-rooted device, use the non rooted behavior instead
         if(settingsManager.isRoot()) {
-            optionCheckboxes[0].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    settingsManager.setLMK(optionCheckboxes[0].isChecked());
-                }
-            });
+            optionCheckboxes[0].setOnCheckedChangeListener((buttonView, isChecked) -> settingsManager.setLMK(isChecked));
+            optionCheckboxes[1].setOnCheckedChangeListener((buttonView, isChecked) -> settingsManager.setMurderer(isChecked));
+            optionCheckboxes[2].setOnCheckedChangeListener((buttonView, isChecked) -> settingsManager.setKeepStockDPI(isChecked));
 
-            optionCheckboxes[1].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    settingsManager.setMurderer(optionCheckboxes[1].isChecked());
-                }
-            });
-
-            optionCheckboxes[2].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    settingsManager.setKeepStockDPI(optionCheckboxes[2].isChecked());
-                }
-            });
         }else{
-            optionCheckboxes[0].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    optionCheckboxes[0].setChecked(false);
-                    Toast.makeText(MainActivity.this, getString(R.string.no_permission_toast), Toast.LENGTH_SHORT).show();
-                }
-            });
-
-            optionCheckboxes[1].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    optionCheckboxes[1].setChecked(false);
-                    Toast.makeText(MainActivity.this, getString(R.string.no_permission_toast), Toast.LENGTH_SHORT).show();
-                }
-            });
-
-            optionCheckboxes[2].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    optionCheckboxes[2].setChecked(true);
-                    Toast.makeText(MainActivity.this, getString(R.string.no_permission_toast), Toast.LENGTH_SHORT).show();
-                }
-            });
+            View.OnClickListener clickListener = v -> Toast.makeText(MainActivity.this, getString(R.string.no_permission_toast), Toast.LENGTH_SHORT).show();
+            for (CheckBox optionCheckbox : optionCheckboxes) {
+                optionCheckbox.setOnClickListener(clickListener);
+            }
         }
 
 
@@ -383,47 +268,42 @@ public class MainActivity extends AppCompatActivity {
     private void loadRecentGamesUI(){
         //Now we need to load recent games
         for(int i=0; i<6; i++){
+            int finalI = i;
             recentGameApp[i] = settingsManager.getRecentGameApp(i+1);
-            final int finalI = i;
             if(recentGameApp[i] != null) {
                 recentGameAppTitle[i].setText(recentGameApp[i].getGameName());
                 recentGameAppLogo[i].setImageDrawable(recentGameApp[i].getIcon());
 
+                recentGameAppLogo[i].setOnClickListener(view -> {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setTitle(R.string.choice_title);
+                    builder.setMessage(R.string.choice_text);
+                    builder.setPositiveButton(R.string.choice_launch_app, (dialog, which) -> GameAppManager.launchGameApp(MainActivity.this, recentGameApp[finalI].getPackageName()));
+                    builder.setNeutralButton(R.string.choice_remove_app, (dialog, which) -> removeGameUI(finalI));
+                    AlertDialog dialog = builder.show();
 
-                recentGameAppLogo[i].setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        GameAppManager.launchGameApp(MainActivity.this, recentGameApp[finalI].getPackageName());
-                    }
-                });
-                recentGameAppLogo[i].setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View view) {
-                        //The long click is used to delete an app
-                        //Todo create a complete sub menu
-                        showRemoveGamePopup(MainActivity.this, finalI);
-                        return false;
-                    }
-                });
-            }else{
-                //No game yet, let's add a game
-                recentGameAppTitle[i].setText(R.string.empty_recent_game);
-                recentGameAppLogo[i].setImageDrawable(ContextCompat.getDrawable(MainActivity.this, R.drawable.empty_recent_game));
+                    Button positiveButton = dialog.findViewById(android.R.id.button1);
+                    Button neutralButton = dialog.findViewById(android.R.id.button3);
+                    positiveButton.setScaleX(1.3f);
+                    positiveButton.setScaleY(1.3f);
+                    neutralButton.setScaleX(1.3f);
+                    neutralButton.setScaleY(1.3f);
 
-                recentGameAppLogo[i].setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        showAddGame(true, finalI);
-                    }
                 });
+                continue;
             }
+            //No game yet, let's add a game
+            recentGameAppTitle[i].setText(R.string.empty_recent_game);
+            recentGameAppLogo[i].setImageDrawable(ContextCompat.getDrawable(MainActivity.this, R.drawable.empty_recent_game));
+
+            recentGameAppLogo[i].setOnClickListener(v -> showAddGame(true, finalI));
+
         }
-        return;
     }
 
     private void setRecentGameAppClickable(boolean state){
-        for(int i = 0; i<5; i++){
-            recentGameAppLogo[i].setClickable(state);
+        for(ImageButton button : recentGameAppLogo){
+            button.setClickable(state);
         }
     }
 
@@ -443,23 +323,15 @@ public class MainActivity extends AppCompatActivity {
         // 2. Chain together various setter methods to set the dialog characteristics
         builder.setTitle(R.string.reset_popup_title)
                 .setMessage(R.string.reset_popup_text)
-                .setPositiveButton(R.string.reset_popup_positive_choice, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        GameAppManager.restoreOriginalLMK(MainActivity.this);
-                        settingsManager.setScreenDimension(settingsManager.getOriginalHeight(), settingsManager.getOriginalWidth());
-
-                    }
+                .setPositiveButton(R.string.reset_popup_positive_choice, (dialog, which) -> {
+                    dialog.dismiss();
+                    GameAppManager.restoreOriginalLMK(MainActivity.this);
+                    settingsManager.setScreenDimension(settingsManager.getOriginalHeight(), settingsManager.getOriginalWidth());
                 })
-                .setNegativeButton(R.string.reset_popup_negative_choice, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Log.d("NEGATIVE CHOICE BUTTON", "PRESSED");
-                        dialog.dismiss();
-                    }
+                .setNegativeButton(R.string.reset_popup_negative_choice, (dialog, which) -> {
+                    Log.d("NEGATIVE CHOICE BUTTON", "PRESSED");
+                    dialog.dismiss();
                 });
-
 
         AlertDialog dialog = builder.create();
 
@@ -469,31 +341,25 @@ public class MainActivity extends AppCompatActivity {
     private void showNoRootPopup(){
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 
-        // 2. Chain together various setter methods to set the dialog characteristics
+
         builder.setTitle(R.string.no_root_popup_title)
                 .setMessage(R.string.no_root_popup_text)
-                .setPositiveButton(R.string.no_root_popup_positive_choice, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        int canWriteSecureSettings = ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_SECURE_SETTINGS);
-                        if(canWriteSecureSettings == PackageManager.PERMISSION_DENIED){
-                            showNoPermissionsPopup();
-                        }else{
-                            //The no-root method is ready, so we register it in the settings;
-                            settingsManager.setRootState(false);
-                        }
-
-
+                .setPositiveButton(R.string.no_root_popup_positive_choice, (dialog, which) -> {
+                    dialog.dismiss();
+                    int canWriteSecureSettings = ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_SECURE_SETTINGS);
+                    if(canWriteSecureSettings == PackageManager.PERMISSION_DENIED){
+                        showNoPermissionsPopup();
+                    }else{
+                        //The no-root method is ready, so we register it in the settings;
+                        settingsManager.setRootState(false);
                     }
+
+
                 })
-                .setNegativeButton(R.string.no_root_popup_negative_choice, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Log.d("NEGATIVE CHOICE BUTTON", "PRESSED");
-                        dialog.dismiss();
-                        finish();
-                    }
+                .setNegativeButton(R.string.no_root_popup_negative_choice, (dialog, which) -> {
+                    Log.d("NEGATIVE CHOICE BUTTON", "PRESSED");
+                    dialog.dismiss();
+                    finish();
                 }).setCancelable(false);
 
 
@@ -508,27 +374,21 @@ public class MainActivity extends AppCompatActivity {
         // 2. Chain together various setter methods to set the dialog characteristics
         builder.setTitle(R.string.no_permission_popup_title)
                 .setMessage(R.string.no_permission_popup_text)
-                .setPositiveButton(R.string.no_permission_popup_positive_choice, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
+                .setPositiveButton(R.string.no_permission_popup_positive_choice, (dialog, which) -> {
+                    dialog.dismiss();
 
-                        Uri url = Uri.parse(getString(R.string.link_to_setup));
-                        Intent intent = new Intent(Intent.ACTION_VIEW, url);
-                        if (intent.resolveActivity(getPackageManager()) != null) {
-                            startActivity(intent);
-                        }
-                        finish();
-
+                    Uri url = Uri.parse(getString(R.string.link_to_setup));
+                    Intent intent = new Intent(Intent.ACTION_VIEW, url);
+                    if (intent.resolveActivity(getPackageManager()) != null) {
+                        startActivity(intent);
                     }
+                    finish();
+
                 })
-                .setNegativeButton(R.string.no_permission_popup_negative_choice, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Log.d("NEGATIVE CHOICE BUTTON", "PRESSED");
-                        dialog.dismiss();
-                        finish();
-                    }
+                .setNegativeButton(R.string.no_permission_popup_negative_choice, (dialog, which) -> {
+                    Log.d("NEGATIVE CHOICE BUTTON", "PRESSED");
+                    dialog.dismiss();
+                    finish();
                 });
 
 
@@ -543,97 +403,29 @@ public class MainActivity extends AppCompatActivity {
         // 2. Chain together various setter methods to set the dialog characteristics
         builder.setTitle(R.string.disclaimer_popup_title)
                 .setMessage(R.string.disclaimer_popup_text)
-                .setPositiveButton(R.string.disclaimer_popup_positive_choice, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        //The user accepted, meaning he entered the app for the first time
-                        settingsManager.initializeFirstLaunch();
+                .setPositiveButton(R.string.disclaimer_popup_positive_choice, (dialog, which) -> {
+                    dialog.dismiss();
+                    //The user accepted, meaning he entered the app for the first time
+                    settingsManager.initializeFirstLaunch();
 
-                    }
                 })
-                .setNegativeButton(R.string.disclaimer_popup_negative_choice, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Log.d("NEGATIVE CHOICE BUTTON", "PRESSED");
-                        dialog.dismiss();
-                        finish();
-                    }
+                .setNegativeButton(R.string.disclaimer_popup_negative_choice, (dialog, which) -> {
+                    Log.d("NEGATIVE CHOICE BUTTON", "PRESSED");
+                    dialog.dismiss();
+                    finish();
                 }).setCancelable(false);
-
 
         AlertDialog dialog = builder.create();
 
         dialog.show();
     }
 
-    void showRemoveGamePopup(Context context, final int gameAppIndex){
-        final Dialog gameListPopUp = new Dialog(this);
-
-        final int xScreen = context.getResources().getDisplayMetrics().widthPixels;
-        final int yScreen = context.getResources().getDisplayMetrics().heightPixels;
-
-        gameListPopUp.setContentView(R.layout.add_game_layout);
-        gameListPopUp.getWindow().setLayout((int) Math.ceil(xScreen*0.90),(int) Math.min(Math.ceil(yScreen*0.85), 204*2 /*204 x number of items*/) );//The magic number 200 correspond to one GameApp item + one space
-
-        LinearLayout layout = (LinearLayout) gameListPopUp.findViewById(R.id.gameListLayout);
-        LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
-
-
-
-        //First the GameApp to show details
-        View child = inflater.inflate(R.layout.game_app_item, null);
-        TextView title = child.findViewById(R.id.textViewGameAppTitle);
-        TextView packageName = child.findViewById(R.id.textViewGameAppPackageName);
-        ImageView icon = child.findViewById(R.id.imageViewGameIcon);
-
-        GameApp game = settingsManager.getRecentGameApp(gameAppIndex+1);
-
-        title.setText(game.getGameName());
-        packageName.setText(game.getPackageName());
-        icon.setImageDrawable(game.getIcon());
-
-        layout.addView(child);
-
-
-        //Then a space
-        child = new Space(this);
-        child.setMinimumHeight(10);
-
-        layout.addView(child);
-
-        //Then the remove from list button
-        child = inflater.inflate(R.layout.detail_item, null);
-        title = child.findViewById(R.id.textViewGameAppTitle);
-        packageName = child.findViewById(R.id.textViewGameAppPackageName);
-
-        title.setText(getString(R.string.remove_popup_title));
-        packageName.setText(getString(R.string.remove_popup_text));
-
-        layout.addView(child);
-
-        child.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                removeGameUI(gameAppIndex);
-                gameListPopUp.dismiss();
-            }
-        });
-
-
-
-
-
-        gameListPopUp.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        gameListPopUp.show();
-    }
 
     private void showAddGame(boolean onlyAddGames, int gameAppIndex){
-        gameList = GameAppManager.getGameApps(MainActivity.this, onlyAddGames);
-        showGameListPopup(MainActivity.this, onlyAddGames, gameAppIndex);
+        showGameList(onlyAddGames, gameAppIndex);
     }
 
-    private void addGameUI(String packageName, int index){
+    public void addGameUI(String packageName, int index){
         settingsManager.addGameApp(packageName, index);
         loadRecentGamesUI();
     }

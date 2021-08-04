@@ -7,11 +7,11 @@
     android:layout_height="wrap_content"
     android:paddingStart="10dp"
     android:paddingEnd="10dp"
-    android:paddingTop="5dp"
-    android:paddingBottom="5dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
     android:translationZ="3dp"
 
-    android:background="@drawable/game_app_item_container"
+    android:background="@color/impureWhite"
     android:clickable="true"
     android:focusable="true"
     android:id="@+id/GameItem"
@@ -28,7 +28,7 @@
         app:layout_constraintHorizontal_bias="0."
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintVertical_bias="0.5"
          />
 
     <View

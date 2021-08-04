@@ -1,6 +1,5 @@
 package com.spse.gameresolutionchanger;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -14,34 +13,10 @@ import java.util.List;
 
 public class GameAppManager {
 
-
-    public static List<GameApp> getGameApps(MainActivity context, boolean onlyAddGames){
-        PackageManager gamePM = context.getPackageManager();
-        List<GameApp> gameAppList = new ArrayList<>();
-        List<PackageInfo> gameAppInfo = gamePM.getInstalledPackages(0);
-
-        for(PackageInfo info : gameAppInfo){
-
-            if (!isValidPackage(context, info, onlyAddGames)) {
-                continue;
-            }
-
-            String appName = info.applicationInfo.loadLabel(gamePM).toString();
-            String packages = info.applicationInfo.packageName;
-
-            WrappedDrawable wrappedIcon = new WrappedDrawable(info.applicationInfo.loadIcon(gamePM),0,0,160,160);
-
-            gameAppList.add(new GameApp(appName, wrappedIcon, packages));
-
-        }
-        return gameAppList;
-    }
-
     public static GameApp getGameApp(Context context, String packageName){
         if (packageName.equals("")) return null;
         PackageManager PM = context.getPackageManager();
         try {
-
             ApplicationInfo app = PM.getApplicationInfo(packageName, 0);
             WrappedDrawable wrappedIcon = new WrappedDrawable(PM.getApplicationIcon(app), 0,0,180,180);
             String name = PM.getApplicationLabel(app).toString();
@@ -53,40 +28,36 @@ public class GameAppManager {
         return null;
     }
 
+    public static ArrayList<String> getPackages(Context ctx, boolean onlyAddGames){
+        PackageManager gamePM = ctx.getPackageManager();
+        ArrayList<String> packageList = new ArrayList<>();
+        List<PackageInfo> gameAppInfo = gamePM.getInstalledPackages(0);
+        for(PackageInfo info : gameAppInfo){
+            if(isSystemPackage(info)) continue;
+            if(onlyAddGames && !isGamePackage(info.applicationInfo, onlyAddGames)) continue;
+
+            packageList.add(info.packageName);
+        }
+        return packageList;
+    }
+
     private static boolean isSystemPackage( PackageInfo pkgInfo) {
         return (pkgInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
     }
 
-    @SuppressLint("NewApi")
-    private static boolean isGamePackage(MainActivity context, ApplicationInfo appInfo, boolean onlyAddGames) {
+
+    private static boolean isGamePackage(ApplicationInfo appInfo, boolean onlyAddGames) {
         //Little hack to just consider everything as a game when we want everything
         if(!onlyAddGames){return true;}
 
         //Check both the new and deprecated flag since some apps only use the deprecated one...
-        return ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) && (appInfo.category == ApplicationInfo.CATEGORY_GAME)) || ((appInfo.flags & ApplicationInfo.FLAG_IS_GAME) == ApplicationInfo.FLAG_IS_GAME);
-    }
-
-    private static boolean isValidPackage(MainActivity context, PackageInfo pkgInfo, boolean onlyAddGames){
-
-        if((isGamePackage(context, pkgInfo.applicationInfo, onlyAddGames)
-                && !isSystemPackage(pkgInfo)
-                && !pkgInfo.packageName.equals(context.getApplicationContext().getPackageName())
-
-        )){
-            for(int i=1;i<=6;i++){
-                if(context.settingsManager.getRecentGameApp(i) != null){
-                    if(context.settingsManager.getRecentGameApp(i).getPackageName().equals(pkgInfo.packageName)){
-                        return false;
-                    }
-                }
-            }
-            return true;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            return (appInfo.category == ApplicationInfo.CATEGORY_GAME)
+                    || (appInfo.flags & ApplicationInfo.FLAG_IS_GAME) == ApplicationInfo.FLAG_IS_GAME;
         }
-        return false;
-
-
-
+        return (appInfo.flags & ApplicationInfo.FLAG_IS_GAME) == ApplicationInfo.FLAG_IS_GAME;
     }
+
 
     private static void murderApps(MainActivity context){
         ArrayList<String> murdererList = new ArrayList<>();
@@ -116,19 +87,19 @@ public class GameAppManager {
             }
         }
 
-        ExecuteADBCommands.execute(murdererList, true);
+        ADB.execute(murdererList, true);
 
     }
 
 
-    private static void activateLMK(MainActivity context){
-        ExecuteADBCommands.execute("cat /sys/module/lowmemorykiller/parameters/minfree > " + context.getApplicationInfo().dataDir + "/lastLMKProfile.backup", true);
+    private static void activateLMK(Context context){
+        ADB.execute("cat /sys/module/lowmemorykiller/parameters/minfree > " + context.getApplicationInfo().dataDir + "/lastLMKProfile.backup", true);
 
-        ExecuteADBCommands.execute("echo 2560,5120,11520,25600,35840,358400 > /sys/module/lowmemorykiller/parameters/minfree", true);
+        ADB.execute("echo 2560,5120,11520,25600,35840,358400 > /sys/module/lowmemorykiller/parameters/minfree", true);
     }
 
-    public static void restoreOriginalLMK(MainActivity context){
-        ExecuteADBCommands.execute("cat " + context.getApplicationInfo().dataDir + "/lastLMKProfile.backup > /sys/module/lowmemorykiller/parameters/minfree", true);
+    public static void restoreOriginalLMK(Context context){
+        ADB.execute("cat " + context.getApplicationInfo().dataDir + "/lastLMKProfile.backup > /sys/module/lowmemorykiller/parameters/minfree", true);
         new File(context.getApplicationInfo().dataDir + "/lastLMKProfile.backup").delete();
     }
 
@@ -147,7 +118,7 @@ public class GameAppManager {
         //Changing the DPI causes the activity layout to restart from scratch, so we have to let a trace informing that we are just changing stuff, not relaunching the app:
 
         if(!st.keepStockDPI()) {
-            ExecuteADBCommands.execute("echo '' > " + context.getApplicationInfo().dataDir + "/tmp", st.isRoot());
+            ADB.execute("echo '' > " + context.getApplicationInfo().dataDir + "/tmp", st.isRoot());
         }
 
         st.setScreenDimension(

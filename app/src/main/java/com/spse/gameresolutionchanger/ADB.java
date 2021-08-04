@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class ExecuteADBCommands extends MainActivity
+public class ADB extends MainActivity
 {
     public static boolean canRunRootCommands()
     {

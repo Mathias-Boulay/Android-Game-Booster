@@ -37,8 +37,10 @@
     <string name="disclaimer_popup_positive_choice">I know what I\'m doing</string>
     <string name="disclaimer_popup_negative_choice">Quit the app</string>
 
-    <string name="remove_popup_title">Remove</string>
-    <string name="remove_popup_text">Removes the app from the list</string>
+    <string name="choice_title">Action</string>
+    <string name="choice_text">What do you want to do ?</string>
+    <string name="choice_launch_app"><b>Launch</b></string>
+    <string name="choice_remove_app"><b>Remove</b></string>
 
     <string name="no_permission_popup_title">No permission</string>
     <string name="no_permission_popup_text">The non-root mode requires the WRITE_SECURE_SETTINGS permission, which can be given through an ADB command.\nClick the learn more button to explain how to.</string>
@@ -47,6 +49,6 @@
 
     <string name="no_permission_toast">Can\'t change this option in non-root mode !</string>
 
-    <string name="link_to_setup">https://github.com/serpentspirale/Android-Game-Booster#Setup</string>
+    <string name="link_to_setup">https://github.com/Mathias-Boulay/Android-Game-Booster#Setup</string>
     
 </resources>

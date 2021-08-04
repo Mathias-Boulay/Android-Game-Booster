@@ -35,7 +35,7 @@ public class SettingsManager {
         displayStats[1] = point.y;
         displayStats[2] = activity.getResources().getDisplayMetrics().densityDpi;
 
-        IS_ROOT = ExecuteADBCommands.canRunRootCommands();
+        IS_ROOT = ADB.canRunRootCommands();
         if(IS_ROOT) {
             AGGRESSIVE_LOW_MEMORY_KILLER = preferences.getBoolean("aggressiveLMK", false);
             KILL_ALL_OTHER_APPS = preferences.getBoolean("isMurderer", false);
@@ -155,7 +155,7 @@ public class SettingsManager {
             }
         }
 
-        success = ExecuteADBCommands.execute(commands, isRoot());
+        success = ADB.execute(commands, isRoot());
         displayStats[0] = width;
         displayStats[1] = height;
         displayStats[2] = densityDPI;
